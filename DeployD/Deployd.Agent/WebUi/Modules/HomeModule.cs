@@ -9,11 +9,19 @@ using Deployd.Core.AgentManagement;
 using Deployd.Core.Hosting;
 using Deployd.Core.Installation;
 using Deployd.Core.PackageCaching;
+using Nancy.Security;
 using Nancy;
 using ILogger = Ninject.Extensions.Logging.ILogger;
 
 namespace Deployd.Agent.WebUi.Modules
 {
+    public abstract class SecureModule : NancyModule
+    {
+        protected SecureModule()
+        {
+        }
+    }
+
     public class HomeModule : NancyModule
     {
         private readonly IAgentSettings _agentSettings;
