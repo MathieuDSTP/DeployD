@@ -1,5 +1,6 @@
 using System;
 using Deployd.Agent.Authentication;
+using Deployd.Agent.Services.Authentication;
 using Deployd.Agent.Services.HubCommunication;
 using Deployd.Agent.Services;
 using Deployd.Agent.Services.InstallationService;
@@ -93,6 +94,7 @@ namespace Deployd.Agent.Conventions
 
             // authentication
             Bind<IUserMapper>().To<DefaultUserMapper>();
+            Bind<IAuthenticationService>().To<AuthenticationService>();
         }
 
         public T GetService<T>()

@@ -1,0 +1,14 @@
+﻿@{
+	Layout  = "noauth_layout.cshtml";
+}
+
+<h2>Sign In</h2>
+
+<form method="post" action="/trylogin?returnUrl=@Model.returnUrl">
+    <fieldset>
+        <legend>Enter your credentials</legend>
+        <label for="username">Username:</label><input type="text" name="username" />
+        <label for="password">Password:</label><input type="password" name="password" />
+        <input type="submit" value="Sign In" />
+    </fieldset>
+</form>

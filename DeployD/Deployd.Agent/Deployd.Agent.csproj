@@ -165,6 +165,7 @@
     <Compile Include="Services\AgentConfiguration\IAgentConfigurationDownloader.cs" />
     <Compile Include="Services\AgentConfiguration\IAgentConfigurationManager.cs" />
     <Compile Include="Services\AgentConfiguration\IConfigurationDefaults.cs" />
+    <Compile Include="Services\Authentication\AuthenticationService.cs" />
     <Compile Include="Services\HubCommunication\AgentStatusFactory.cs" />
     <Compile Include="Services\HubCommunication\HubCommunicationService.cs" />
     <Compile Include="Services\InstallationService\PackageInstallationService.cs" />
@@ -275,7 +276,7 @@
     <Content Include="WebUi\Views\configuration\index.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="WebUi\Views\auth\signin.cshtml">
+    <Content Include="WebUi\Views\login.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="WebUi\Views\noauth_layout.cshtml">

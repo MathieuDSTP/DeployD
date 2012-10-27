@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Deployd.Agent.Services.Authentication;
+using Deployd.Core.Hosting;
 using Nancy;
 using Nancy.Authentication.Forms;
 
@@ -9,10 +11,29 @@ namespace Deployd.Agent.WebUi.Modules
 {
     public class AuthModule : NancyModule
     {
-        
-        public AuthModule()
+        public static Func<IIocContainer> Container { get; set; }
+
+        public AuthModule() : base()
         {
-            Get["/login"] = x => View["auth/signin.cshtml"];
+            Get["/login"] = x => View["login.cshtml", new{returnUrl=Request.Query["returnUrl"]}];
+
+            Post["/trylogin"] = x =>
+                {
+                    var authenticationService = Container().GetType<IAuthenticationService>();
+                if (authenticationService.CredentialsAuthenticate(x.Username, x.Password))
+                {
+                    return FormsAuthentication.UserLoggedInRedirectResponse(
+                        Context,
+                        authenticationService.GenerateAuthenticationToken(),
+                        DateTime.Now.AddMinutes(10));
+                }
+                else
+                {
+                    return Response.AsRedirect("~/login");
+                }
+            };
+
+            Get["/logout"] = x => { return FormsAuthentication.LogOutAndRedirectResponse(Context, "/"); };
         }
     }
 }

@@ -37,6 +37,7 @@ namespace Deployd.Agent.Services.Management
             LogModule.Container = AppContext.Container;
             ActionsModule.Container = AppContext.Container;
             ConfigurationModule.Container = AppContext.Container;
+            AuthModule.Container = AppContext.Container;
 
             Nancy.Json.JsonSettings.MaxJsonLength = 1024*1024*5; // 5mb max
 
