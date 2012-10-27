@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Deployd.Core.AgentManagement;
 
-namespace Deployd.Agent.WebUi.Modules
+namespace Deployd.Agent.WebUi.Models
 {
     public class ActionDetailsViewModel
     {
