@@ -16,6 +16,7 @@ using Deployd.Core.Notifications;
 using Deployd.Core.PackageCaching;
 using Deployd.Core.PackageTransport;
 using Deployd.Core.Remoting;
+using Nancy.Authentication.Basic;
 using Nancy.Authentication.Forms;
 using Nancy.Security;
 using Ninject;
@@ -95,6 +96,7 @@ namespace Deployd.Agent.Conventions
             // authentication
             Bind<IUserMapper>().To<DefaultUserMapper>();
             Bind<IAuthenticationService>().To<AuthenticationService>();
+            Bind<IUserValidator>().To<DeployDUserValidator>();
         }
 
         public T GetService<T>()

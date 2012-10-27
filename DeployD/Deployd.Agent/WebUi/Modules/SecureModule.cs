@@ -1,4 +1,5 @@
 using Nancy;
+using Nancy.Authentication.Basic;
 using Nancy.Security;
 
 namespace Deployd.Agent.WebUi.Modules

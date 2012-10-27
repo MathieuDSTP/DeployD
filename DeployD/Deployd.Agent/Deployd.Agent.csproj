@@ -87,6 +87,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Nancy.0.12.1\lib\net40\Nancy.dll</HintPath>
     </Reference>
+    <Reference Include="Nancy.Authentication.Basic">
+      <HintPath>..\packages\Nancy.Authentication.Basic.0.12.1\lib\net40\Nancy.Authentication.Basic.dll</HintPath>
+    </Reference>
     <Reference Include="Nancy.Authentication.Forms">
       <HintPath>..\packages\Nancy.Authentication.Forms.0.12.1\lib\net40\Nancy.Authentication.Forms.dll</HintPath>
     </Reference>
@@ -153,6 +156,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Authentication\DefaultUserMapper.cs" />
+    <Compile Include="Authentication\DeploydUserIdentity.cs" />
+    <Compile Include="Authentication\DeployDUserValidator.cs" />
     <Compile Include="Conventions\ContainerConfiguration.cs" />
     <Compile Include="Services\ActionExecutionService.cs" />
     <Compile Include="Services\AgentConfiguration\AgentConfigurationDownloader.cs" />
