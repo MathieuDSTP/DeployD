@@ -152,6 +152,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Authentication\DefaultUserMapper.cs" />
     <Compile Include="Conventions\ContainerConfiguration.cs" />
     <Compile Include="Services\ActionExecutionService.cs" />
     <Compile Include="Services\AgentConfiguration\AgentConfigurationDownloader.cs" />
@@ -186,8 +187,10 @@
     <Compile Include="WebUi\Modules\ActionsModule.cs" />
     <Compile Include="WebUi\Modules\ConfigurationModule.cs" />
     <Compile Include="WebUi\Modules\InstallationsModule.cs" />
+    <Compile Include="WebUi\Modules\AuthModule.cs" />
     <Compile Include="WebUi\Modules\LogModule.cs" />
     <Compile Include="WebUi\Modules\PackagesModule.cs" />
+    <Compile Include="WebUi\Modules\SecureModule.cs" />
     <Compile Include="WebUi\NancyConventionsBootstrapper.cs" />
     <Compile Include="WebUi\Modules\HomeModule.cs" />
     <Compile Include="WebUi\Models\PackageVersionsViewModel.cs" />
@@ -270,6 +273,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="WebUi\Views\configuration\index.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="WebUi\Views\auth\signin.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="WebUi\Views\noauth_layout.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

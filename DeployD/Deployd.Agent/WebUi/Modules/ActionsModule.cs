@@ -13,7 +13,7 @@ using Nancy.Responses;
 
 namespace Deployd.Agent.WebUi.Modules
 {
-    public class ActionsModule : NancyModule
+    public class ActionsModule : SecureModule
     {
         public static Func<IIocContainer> Container { get; set; }
         public ActionsModule():base("/actions")

@@ -11,7 +11,7 @@ using Nancy;
 
 namespace Deployd.Agent.WebUi.Modules
 {
-    public class LogModule : NancyModule
+    public class LogModule : SecureModule
     {
         public static Func<IIocContainer> Container { get; set; }
 

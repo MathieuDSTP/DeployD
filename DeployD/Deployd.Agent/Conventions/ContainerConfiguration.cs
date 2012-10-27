@@ -1,4 +1,5 @@
 using System;
+using Deployd.Agent.Authentication;
 using Deployd.Agent.Services.HubCommunication;
 using Deployd.Agent.Services;
 using Deployd.Agent.Services.InstallationService;
@@ -14,6 +15,8 @@ using Deployd.Core.Notifications;
 using Deployd.Core.PackageCaching;
 using Deployd.Core.PackageTransport;
 using Deployd.Core.Remoting;
+using Nancy.Authentication.Forms;
+using Nancy.Security;
 using Ninject;
 using Ninject.Modules;
 using NuGet;
@@ -87,6 +90,9 @@ namespace Deployd.Agent.Conventions
             // notifiers
             Bind<INotificationService>().To<NotificationService>().InSingletonScope();
             Bind<INotifier>().To<JabberNotifier>().InSingletonScope();
+
+            // authentication
+            Bind<IUserMapper>().To<DefaultUserMapper>();
         }
 
         public T GetService<T>()
