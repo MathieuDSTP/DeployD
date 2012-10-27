@@ -30,7 +30,7 @@ namespace Deployd.Agent.WebUi.Modules
                                                                     Settings = agentSettings
                                                                 };
 
-                               return this.ViewOrJson("configuration/index.cshtml", configurationViewModel);
+                               return Negotiate.WithView("configuration/index.cshtml").WithModel(configurationViewModel);
                            };
 
             Get["/watchList"] = x =>

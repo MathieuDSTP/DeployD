@@ -33,7 +33,7 @@ namespace Deployd.Agent.WebUi.Modules
                 var agentSettings = Container().GetType<IAgentSettings>();
                 var allPackagesList = Container().GetType<IPackagesList>();
                 var model = RunningTasksToPackageListViewModelConverter.Convert(cache, runningTasks, installCache, completedTasks, agentSettings, allPackagesList);
-                return this.ViewOrJson("packages/index.cshtml", model);
+                return Negotiate.WithView("packages/index.cshtml").WithModel(model);
             };
             
             Get["/{packageId}"] = x =>
@@ -49,8 +49,8 @@ namespace Deployd.Agent.WebUi.Modules
                 var availableActions = actionsRepository.GetActionsForPackage(x.packageId);
 
 				var latestVersion = currentInstalledPackage != null ? currentInstalledPackage.Version.ToString() : "";
-                return this.ViewOrJson("packages/package.cshtml",
-                    new PackageVersionsViewModel(x.packageId, packageVersions, latestVersion, currentInstallTask, availableActions));
+                return Negotiate.WithView("packages/package.cshtml")
+                    .WithModel(new PackageVersionsViewModel(x.packageId, packageVersions, latestVersion, currentInstallTask, availableActions));
             };
 
             Get["/{packageId}/actions"] = x =>
@@ -63,7 +63,7 @@ namespace Deployd.Agent.WebUi.Modules
                     PackageId = x.packageId
                 };
 
-                return this.ViewOrJson("packages/actions.cshtml", viewModel);
+                return Negotiate.WithView("packages/actions.cshtml").WithModel(viewModel);
             };
 
             Post["/{packageId}/install", y => true] = x =>
@@ -79,7 +79,7 @@ namespace Deployd.Agent.WebUi.Modules
                 }
 
                 installationManager.Add(x.packageId, versionString);
-                return this.ResponseOrJson(Response.AsRedirect("/packages"));
+                return Response.AsRedirect("/packages");
             };
 
             Post["/{packageId}/install/{specificVersion}", y => true] = x =>
@@ -88,7 +88,7 @@ namespace Deployd.Agent.WebUi.Modules
                 log.DebugFormat("Install {0} ({1})", x.packageId, x.specificVersion);
                 var installationManager = Container().GetType<InstallationTaskQueue>();
                 installationManager.Add(x.packageId, x.specificVersion);
-                return this.ResponseOrJson(Response.AsRedirect("/packages"));
+                return Response.AsRedirect("/packages");
             };
 
             Post["/UpdateAllTo", y => true] = x =>
@@ -107,7 +107,7 @@ namespace Deployd.Agent.WebUi.Modules
                     queue.Add(packageVersions.Id, packageVersions.Version.ToString());
                 }
 
-                return this.ResponseOrJson(Response.AsRedirect("/packages"));
+                return Response.AsRedirect("/packages");
             };
 
             Post["/UpdateAllTo/latest", y => true] = x =>
@@ -126,7 +126,7 @@ namespace Deployd.Agent.WebUi.Modules
                     queue.Add(packageVersions.Key, version.ToString());
                 }
 
-                return this.ResponseOrJson(Response.AsRedirect("/packages"));
+                return Response.AsRedirect("/packages");
             };
 
             Post["/UpdateAllTo/{specificVersion}", y => true] = x =>
@@ -142,7 +142,7 @@ namespace Deployd.Agent.WebUi.Modules
                     queue.Add(packageVersions.Id, packageVersions.Version.ToString());
                 }
 
-                return this.ResponseOrJson(Response.AsRedirect("/packages"));
+                return Response.AsRedirect("/packages");
             };
         }
 

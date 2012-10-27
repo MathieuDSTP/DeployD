@@ -23,7 +23,7 @@ namespace Deployd.Agent.WebUi.Modules
                 var fileSystem = Container().GetType<IFileSystem>();
                 var packageList = GetPackageLogDirectories(fileSystem, agentSettings);
                 packageList.Insert(0,"server");
-                return this.ViewOrJson("logs/packages.cshtml", packageList);
+                return Negotiate.WithView("logs/packages.cshtml").WithModel(packageList);
             };
 
             Get["/{packageId}"] = x =>
@@ -31,7 +31,7 @@ namespace Deployd.Agent.WebUi.Modules
                 var agentSettings = Container().GetType<IAgentSettings>();
                 var fileSystem = Container().GetType<IFileSystem>();
                 LogListViewModel logList = GetLogList(fileSystem, agentSettings, x.packageId);
-                return this.ViewOrJson("logs/list.cshtml", logList);
+                return Negotiate.WithView("logs/list.cshtml").WithModel(logList);
             };
 
             Get["/{packageId}/{filename}"] = x =>
@@ -39,7 +39,7 @@ namespace Deployd.Agent.WebUi.Modules
                 var agentSettings = Container().GetType<IAgentSettings>();
                 var fileSystem = Container().GetType<IFileSystem>();
                 LogViewModel log = GetLog(fileSystem, agentSettings, x.packageId, x.filename);
-                return this.ViewOrJson("logs/log.cshtml", log);
+                return Negotiate.WithView("logs/log.cshtml").WithModel(log);
             };
 
             Get["/server"] = x =>
@@ -47,7 +47,7 @@ namespace Deployd.Agent.WebUi.Modules
                 var agentSettings = Container().GetType<IAgentSettings>();
                 var fileSystem = Container().GetType<IFileSystem>();
                 var viewModel = LoadServerLogList(fileSystem, agentSettings);
-                return this.ViewOrJson("logs/list.cshtml", viewModel);
+                return Negotiate.WithView("logs/list.cshtml").WithModel(viewModel);
             };
 
             Get["/server/{filename}"] = x =>
@@ -61,7 +61,7 @@ namespace Deployd.Agent.WebUi.Modules
                     var agentSettings = Container().GetType<IAgentSettings>();
                     var fileSystem = Container().GetType<IFileSystem>();
                     var viewModel = LoadLogViewModel(logFilename, fileSystem, agentSettings, true);
-                    return this.ViewOrJson("logs/log.cshtml", viewModel);
+                    return Negotiate.WithView("logs/log.cshtml").WithModel(viewModel);
                 }catch(ArgumentException)
                 {
                     return new NotFoundResponse();

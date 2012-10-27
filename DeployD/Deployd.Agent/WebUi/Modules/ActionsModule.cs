@@ -24,7 +24,7 @@ namespace Deployd.Agent.WebUi.Modules
 
                 var viewModel = packageCache.AllCachedPackages();
 
-                return this.ViewOrJson("actions/index.cshtml", viewModel);
+                return Negotiate.WithView("actions/index.cshtml").WithModel(viewModel);
             };
 
             Get["/{actionTaskId}"] = x =>
@@ -32,7 +32,7 @@ namespace Deployd.Agent.WebUi.Modules
                 var actionsRepository = Container().GetType<ActionExecutionService>();
                 ActionTask action = actionsRepository.GetAction(x.actionTaskId);
 
-                return this.ViewOrJson("actions/task.cshtml", action);
+                return Negotiate.WithView("actions/task.cshtml").WithModel(action);
             };
 
             Get["/{packageId}/{action}"] = x =>
@@ -50,7 +50,7 @@ namespace Deployd.Agent.WebUi.Modules
                     PackageId = x.packageId,
                     Action = x.action
                 };
-                return this.ViewOrJson("actions/action.cshtml", viewModel);
+                return Negotiate.WithView("actions/action.cshtml").WithModel(viewModel);
             };
 
             Post["/{packageId}/{action}/run"] = x =>
@@ -60,7 +60,8 @@ namespace Deployd.Agent.WebUi.Modules
                 string unencodedScriptName = HttpUtility.UrlDecode(x.action);
                 var action = actionRepository.GetAction(x.packageId, unencodedScriptName);
                 var task = actionQueue.Add(action.PackageId, unencodedScriptName, action.ScriptPath);
-                return new RedirectResponse("/actions/"+task.Id);
+                string taskId = task.Id;
+                return Response.AsRedirect("/actions/"+taskId);
             };
         }
     }

@@ -73,8 +73,7 @@ namespace Deployd.Agent.WebUi.Modules
                     Environment = _agentSettings.DeploymentEnvironment,
                 };
 
-
-                return this.ViewOrJson("sitrep.cshtml", model);
+                return Negotiate.WithView("sitrep.cshtml").WithModel(model);
                                      
             };
         }

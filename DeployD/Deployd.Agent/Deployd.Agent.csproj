@@ -187,7 +187,6 @@
     <Compile Include="WebUi\Modules\ConfigurationModule.cs" />
     <Compile Include="WebUi\Modules\InstallationsModule.cs" />
     <Compile Include="WebUi\Modules\LogModule.cs" />
-    <Compile Include="WebUi\NancyModuleExtensions.cs" />
     <Compile Include="WebUi\Modules\PackagesModule.cs" />
     <Compile Include="WebUi\NancyConventionsBootstrapper.cs" />
     <Compile Include="WebUi\Modules\HomeModule.cs" />
