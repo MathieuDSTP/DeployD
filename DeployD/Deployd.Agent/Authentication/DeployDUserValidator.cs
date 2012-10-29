@@ -1,4 +1,5 @@
 using Deployd.Agent.Services.Authentication;
+using Microsoft.Practices.ServiceLocation;
 using Nancy.Authentication.Basic;
 using Nancy.Security;
 
@@ -6,16 +7,14 @@ namespace Deployd.Agent.Authentication
 {
     public class DeployDUserValidator  : IUserValidator
     {
-        private readonly IAuthenticationService _authenticationService;
-
-        public DeployDUserValidator(IAuthenticationService authenticationService)
+        public DeployDUserValidator()
         {
-            _authenticationService = authenticationService;
         }
 
         public IUserIdentity Validate(string username, string password)
         {
-            if (_authenticationService.CredentialsAuthenticate(username, password))
+            var authenticationService = ServiceLocator.Current.GetInstance<IAuthenticationService>();
+            if (authenticationService.CredentialsAuthenticate(username, password))
             {
                 return new DeploydUserIdentity(){UserName=username};
             }

@@ -63,17 +63,14 @@ namespace Deployd.Agent.Conventions
                             };
                         store.Initialize();
                         return store;
-                    }).InSingletonScope();
+                    }).InSingletonScope()
+                .OnDeactivation(store => { Console.WriteLine("Deactivating document store"); store.Dispose(); });
             Bind<IDocumentSession>()
-                .ToMethod(ctx =>
-                    {
-                        Console.WriteLine("Opening document session");
-                        return KernelInstance.Get<IDocumentStore>().OpenSession();
-                    })
+                .ToMethod(ctx => KernelInstance.Get<IDocumentStore>().OpenSession())
                 .OnDeactivation(session =>
                     {
-                        Console.WriteLine("Saving changes and closing session");
-                        session.SaveChanges();
+                        if (session.Advanced.HasChanges)
+                            session.SaveChanges();
                         session.Dispose();
                     });
 
@@ -126,11 +123,10 @@ namespace Deployd.Agent.Conventions
 
             // security
             Bind<IUserMapper>().To<DefaultUserMapper>();
-            Bind<IAuthenticationService>().To<AuthenticationService>().InSingletonScope();
+            Bind<IAuthenticationService>().To<AuthenticationService>();
             Bind<IUserValidator>().To<DeployDUserValidator>();
             Bind<ICredentialStore>()
-                .To<DocumentCredentialStore>().InSingletonScope()
-                .OnActivation((x,m)=> Console.WriteLine("Activating a new credential store"));
+                .To<DocumentCredentialStore>();
         }
 
         public T GetService<T>()

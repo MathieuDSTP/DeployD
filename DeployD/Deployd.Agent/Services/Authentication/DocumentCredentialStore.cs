@@ -69,12 +69,12 @@ namespace Deployd.Agent.Services.Authentication
 
             if (existingResetHolder != null)
             {
-                existingResetHolder.Id = resetToken;
+                existingResetHolder.Id = resetToken.ToString();
                 existingResetHolder.Expiry = DateTime.Now.AddHours(1);
             }
             else
             {
-                _session.Store(new PasswordResetToken() { Username = username, Id = resetToken, Expiry = DateTime.Now.AddHours(1) });
+                _session.Store(new PasswordResetToken() { Username = username, Id = resetToken.ToString(), Expiry = DateTime.Now.AddHours(1) });
             }
 
             return resetToken.ToString();
@@ -86,7 +86,7 @@ namespace Deployd.Agent.Services.Authentication
             if (user == null)
                 return false;
 
-            return user.HashedPassword.Equals(password, StringComparison.CurrentCultureIgnoreCase);
+            return BCrypt.Net.BCrypt.Verify(password, user.HashedPassword);
         }
 
         public UserCredentials GetByAccessToken(Guid guid)
@@ -111,6 +111,11 @@ namespace Deployd.Agent.Services.Authentication
         public UserCredentials GetByUsername(string username)
         {
             return _session.Load<UserCredentials>(username);
+        }
+
+        public bool VerifyPasswordResetToken(string token)
+        {
+            return _session.Load<PasswordResetToken>(token) != null;
         }
     }
 }

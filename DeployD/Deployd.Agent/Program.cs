@@ -13,6 +13,7 @@ using Microsoft.Practices.ServiceLocation;
 using Ninject;
 using Ninject.Modules;
 using NinjectAdapter;
+using Raven.Client;
 using log4net;
 using log4net.Appender;
 using log4net.Config;
@@ -85,6 +86,8 @@ namespace Deployd.Agent
             {
                 Logger.Error("Unhandled exception", ex);
             }
+
+            ServiceLocator.Current.GetInstance<IDocumentStore>().Dispose();
         }
 
         private static void SetLogAppenderPaths(IAgentSettings agentSettings, ILog log)

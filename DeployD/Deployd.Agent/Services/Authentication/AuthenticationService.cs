@@ -3,15 +3,18 @@ using System.Linq;
 using System.Text;
 using Deployd.Agent.Authentication;
 using Nancy.Authentication.Forms;
+using log4net;
 
 namespace Deployd.Agent.Services.Authentication
 {
     public class AuthenticationService : IAuthenticationService
     {
+        private ILog _log = LogManager.GetLogger(typeof (AuthenticationService));
         private readonly ICredentialStore _credentialStore;
 
         public AuthenticationService(ICredentialStore credentialStore)
         {
+            _log.Debug("activating an AuthenticationService");
             _credentialStore = credentialStore;
         }
 

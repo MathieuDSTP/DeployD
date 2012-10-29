@@ -32,7 +32,7 @@ namespace Deployd.Agent.Services.Authentication
         public void ResetPassword(string compressedToken, string newPassword)
         {
             Guid tokenAsGuid=Guid.Parse(compressedToken);
-            var resetToken = PasswordResetTokens.SingleOrDefault(x => x.Id == tokenAsGuid);
+            var resetToken = PasswordResetTokens.SingleOrDefault(x => x.Id == tokenAsGuid.ToString());
             if (resetToken != null)
             {
                 var credentials = GetByUsername(resetToken.Username);
@@ -60,13 +60,13 @@ namespace Deployd.Agent.Services.Authentication
 
             if (existingResetHolder != null)
             {
-                existingResetHolder.Id = resetToken;
+                existingResetHolder.Id = resetToken.ToString();
                 existingResetHolder.Expiry = DateTime.Now.AddHours(1);
             }
             else
             {
                 PasswordResetTokens.Add(new PasswordResetToken()
-                    {Username = username, Id = resetToken, Expiry = DateTime.Now.AddHours(1)});
+                    {Username = username, Id = resetToken.ToString(), Expiry = DateTime.Now.AddHours(1)});
             }
 
             return resetToken.ToString();
@@ -102,12 +102,17 @@ namespace Deployd.Agent.Services.Authentication
             return CredentialStore.SingleOrDefault(
                 uc=>uc.Id.Equals(username, StringComparison.CurrentCultureIgnoreCase));        
         }
+
+        public bool VerifyPasswordResetToken(string token)
+        {
+            return PasswordResetTokens.Any(t => t.Id == Guid.Parse(token).ToString());
+        }
     }
 
-    internal class PasswordResetToken
+    public class PasswordResetToken
     {
         public string Username { get; set; }
-        public Guid Id { get; set; }
+        public string Id { get; set; }
         public DateTime Expiry { get; set; }
     }
 }

@@ -10,6 +10,7 @@ using Deployd.Core.Hosting;
 using Deployd.Core.Installation;
 using Deployd.Core.PackageCaching;
 using Nancy;
+using Ninject;
 using ILogger = Ninject.Extensions.Logging.ILogger;
 
 namespace Deployd.Agent.WebUi.Modules
@@ -27,11 +28,11 @@ namespace Deployd.Agent.WebUi.Modules
 
             Get["/sitrep"] = x =>
                                  {
-                var _log = Container().GetType<ILogger>();
+                var _log = RequestScope.Get<ILogger>();
                 _log.Debug(string.Format("{0} asked for status", Request.UserHostAddress));
                 var cache = Container().GetType<ILocalPackageCache>();
-                var runningTasks = Container().GetType<RunningInstallationTaskList>();
-                var installCache = Container().GetType<IInstalledPackageArchive>();
+                var runningTasks = RequestScope.Get<RunningInstallationTaskList>();
+                var installCache = RequestScope.Get<IInstalledPackageArchive>();
 
                 var model =
                 new AgentStatusViewModel

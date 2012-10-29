@@ -14,5 +14,6 @@ namespace Deployd.Agent.Services.Authentication
         UserCredentials GetByAccessToken(Guid guid);
         void SetAccessToken(string username, Guid guid);
         UserCredentials GetByUsername(string username);
+        bool VerifyPasswordResetToken(string token);
     }
 }

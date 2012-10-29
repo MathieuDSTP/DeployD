@@ -56,5 +56,22 @@ namespace Deployd.Agent.WebUi
 
             return credentials;
         }
+
+        protected override void ConfigureRequestContainer(IKernel container, NancyContext context)
+        {
+            base.ConfigureRequestContainer(container, context);
+            container.Bind<IDocumentSession>()
+                .ToMethod(ctx =>
+                    {
+                        log.Debug("(Bootstrapper) opening session");
+                        return container.Get<IDocumentStore>().OpenSession();
+                    })
+                .OnDeactivation(session =>
+                    {
+                        log.Debug("(Bootstrapper) saving changes and closing session");
+                        session.SaveChanges();
+                        session.Dispose();
+                    });
+        }
     }
 }

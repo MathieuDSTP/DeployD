@@ -11,10 +11,11 @@ using Nancy.Helpers;
 using Nancy.Responses;
 using Ninject;
 using Raven.Client;
+using Raven.Client.Linq;
 
 namespace Deployd.Agent.WebUi.Modules
 {
-    public class AuthModule : NancyModuleWithSession
+    public class AuthModule : NancyModuleWithScope
     {
         public AuthModule() : base()
         {
@@ -22,38 +23,47 @@ namespace Deployd.Agent.WebUi.Modules
 
             Post["/trylogin"] = x =>
                 {
-                    var authenticationService = RequestScopeContainer.Get<IAuthenticationService>();
-                    if (authenticationService.CredentialsAuthenticate(Request.Form["username"],
-                                                                        Request.Form["password"]))
-                    {
-                        return FormsAuthentication.UserLoggedInRedirectResponse(
-                            Context,
-                            authenticationService.GenerateAuthenticationToken(Request.Form["username"]),
-                            DateTime.Now.AddMinutes(10));
-                    }
-                    else
-                    {
-                        return Response.AsRedirect("~/login");
-                    }
+
+                    var authenticationService = RequestScope.Get<IAuthenticationService>();
+                        if (authenticationService.CredentialsAuthenticate(Request.Form["username"],
+                                                                          Request.Form["password"]))
+                        {
+                            return FormsAuthentication.UserLoggedInRedirectResponse(
+                                Context,
+                                authenticationService.GenerateAuthenticationToken(Request.Form["username"]),
+                                DateTime.Now.AddMinutes(10));
+                        }
+                        else
+                        {
+                            return Response.AsRedirect("~/login");
+                        }
+                    
                 };
 
-            Get["/logout"] = x => { return FormsAuthentication.LogOutAndRedirectResponse(Context, "/"); };
+            Get["/logout"] = x => FormsAuthentication.LogOutAndRedirectResponse(Context, "/");
 
             Get["/resetpassword/{token}"] = x =>
                 {
-                    try
-                    {
-                        new Guid(HttpUtility.UrlDecode(x.token));
-                    } catch
-                    {
-                        return Response.AsRedirect("~/");
-                    }
+                        try
+                        {
+                            new Guid(HttpUtility.UrlDecode(x.token));
+                        }
+                        catch
+                        {
+                            return Response.AsRedirect("~/");
+                        }
 
-                    return View["resetpassword.cshtml", new PasswordResetViewModel() {PasswordResetToken = x.token}];
+                        var credentialStore = Container().GetType<ICredentialStore>();
+                        if (!credentialStore.VerifyPasswordResetToken(x.token))
+                        {
+                            return Response.AsRedirect("~/");
+                        }
+
+                        return View["resetpassword.cshtml", new PasswordResetViewModel() { PasswordResetToken = x.token }];
                 };
             Post["/resetpassword/{token}"] = x =>
                 {
-                    var credentialStore = RequestScopeContainer.Get<ICredentialStore>();
+                    var credentialStore = RequestScope.Get<ICredentialStore>();
                     credentialStore.ResetPassword(x.token, Request.Form["password"]);
                     return Response.AsRedirect("/passwordreset");
                 };
