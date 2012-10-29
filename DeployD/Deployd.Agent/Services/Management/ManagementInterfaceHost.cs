@@ -58,7 +58,8 @@ namespace Deployd.Agent.Services.Management
 
         public void Stop()
         {
-            _host.Close();
+            if (_host != null)
+                _host.Close();
         }
     }
 }

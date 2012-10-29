@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Deployd.Agent.Authentication;
 using Deployd.Agent.Bootstrap;
 using Deployd.Agent.Services.Authentication;
@@ -23,6 +24,8 @@ using Nancy.Security;
 using Ninject;
 using Ninject.Modules;
 using NuGet;
+using Raven.Client;
+using Raven.Client.Embedded;
 using log4net;
 
 namespace Deployd.Agent.Conventions
@@ -49,7 +52,31 @@ namespace Deployd.Agent.Conventions
             Bind<IWindowsService>().To<ActionExecutionService>().InSingletonScope();
             Bind<IWindowsService>().To<HubCommunicationService>().InSingletonScope();
             Bind<IWindowsService>().To<HubCommunicationsQueueService>().InSingletonScope();
-            
+
+            // database
+            Bind<IDocumentStore>()
+                .ToMethod(ctx =>
+                    {
+                        var store = new EmbeddableDocumentStore()
+                            {
+                                DataDirectory = Path.Combine(AgentSettings.AgentProgramDataPath, "Data")
+                            };
+                        store.Initialize();
+                        return store;
+                    }).InSingletonScope();
+            Bind<IDocumentSession>()
+                .ToMethod(ctx =>
+                    {
+                        Console.WriteLine("Opening document session");
+                        return KernelInstance.Get<IDocumentStore>().OpenSession();
+                    })
+                .OnDeactivation(session =>
+                    {
+                        Console.WriteLine("Saving changes and closing session");
+                        session.SaveChanges();
+                        session.Dispose();
+                    });
+
             // hub comms
             Bind<HubCommunicationService>().ToSelf().InSingletonScope();
             Bind<HubCommunicationsQueue>().ToSelf().InSingletonScope();
@@ -102,7 +129,7 @@ namespace Deployd.Agent.Conventions
             Bind<IAuthenticationService>().To<AuthenticationService>().InSingletonScope();
             Bind<IUserValidator>().To<DeployDUserValidator>();
             Bind<ICredentialStore>()
-                .To<InMemoryCredentialStore>().InSingletonScope()
+                .To<DocumentCredentialStore>().InSingletonScope()
                 .OnActivation((x,m)=> Console.WriteLine("Activating a new credential store"));
         }
 

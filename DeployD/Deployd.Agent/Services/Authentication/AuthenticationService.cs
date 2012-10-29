@@ -33,7 +33,7 @@ namespace Deployd.Agent.Services.Authentication
             if(user !=null)
                 return new DeploydUserIdentity()
                     {
-                        UserName=user.Username
+                        UserName=user.Id
                     };
 
             return null;

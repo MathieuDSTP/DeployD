@@ -4,7 +4,7 @@ using Nancy.Security;
 
 namespace Deployd.Agent.WebUi.Modules
 {
-    public abstract class SecureModule : NancyModule
+    public abstract class SecureModule : NancyModuleWithSession
     {
         protected SecureModule()
         {

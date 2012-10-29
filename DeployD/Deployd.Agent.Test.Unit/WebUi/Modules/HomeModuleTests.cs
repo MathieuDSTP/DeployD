@@ -10,6 +10,7 @@ using Moq;
 using NUnit.Framework;
 using Nancy;
 using Nancy.Testing;
+using Ninject.Activation.Blocks;
 using NuGet;
 
 namespace Deployd.Agent.Test.Unit.WebUi.Modules
@@ -113,6 +114,16 @@ namespace Deployd.Agent.Test.Unit.WebUi.Modules
                     return (T)InstallationManagerMock.Object;
                 }
 
+                throw new NotImplementedException();
+            }
+
+            public IEnumerable<T> GetTypes<T>()
+            {
+                throw new NotImplementedException();
+            }
+
+            public IActivationBlock BeginBlock()
+            {
                 throw new NotImplementedException();
             }
         }

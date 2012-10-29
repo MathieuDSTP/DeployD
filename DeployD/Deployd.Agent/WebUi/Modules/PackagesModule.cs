@@ -18,7 +18,6 @@ namespace Deployd.Agent.WebUi.Modules
 {
     public class PackagesModule : SecureModule
     {
-        public static Func<IIocContainer> Container { get; set; }
         public static readonly List<InstallationTask> InstallationTasks = new List<InstallationTask>();
 
         public PackagesModule(): base("/packages")

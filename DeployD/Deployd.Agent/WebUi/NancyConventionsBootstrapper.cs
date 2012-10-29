@@ -1,39 +1,47 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Principal;
+using Deployd.Agent.Conventions;
+using Microsoft.Practices.ServiceLocation;
 using Nancy;
 using Nancy.Authentication.Basic;
 using Nancy.Authentication.Forms;
 using Nancy.Responses.Negotiation;
+using Ninject;
+using Raven.Client;
 using TinyIoC;
+using log4net;
 
 namespace Deployd.Agent.WebUi
 {
-    public class NancyConventionsBootstrapper : DefaultNancyBootstrapper
+    public class NancyConventionsBootstrapper : Nancy.Bootstrappers.Ninject.NinjectNancyBootstrapper
     {
-        protected override void ApplicationStartup(TinyIoCContainer container, Nancy.Bootstrapper.IPipelines pipelines)
+        private ILog log = LogManager.GetLogger(typeof (NancyConventionsBootstrapper));
+
+        protected override void ApplicationStartup(Ninject.IKernel container, Nancy.Bootstrapper.IPipelines pipelines)
         {
+            ConfigureApplicationContainer(ServiceLocator.Current.GetInstance<IKernel>());
             Conventions.ViewLocationConventions.Add((viewName, model, context) => string.Concat("WebUi/Views/", viewName));
 
             var formsAuthConfig = new FormsAuthenticationConfiguration()
             {
                 RedirectUrl = "~/login",
                 RedirectQuerystringKey = "returnUrl",
-                UserMapper = container.Resolve<IUserMapper>()
+                UserMapper = ServiceLocator.Current.GetInstance<IUserMapper>()
             };
             FormsAuthentication.Enable(pipelines, formsAuthConfig);
 
-            var basicAuthenticationConfig = new BasicAuthenticationConfiguration(container.Resolve<IUserValidator>(), "deployd", UserPromptBehaviour.Never);
+            var basicAuthenticationConfig = new BasicAuthenticationConfiguration(ServiceLocator.Current.GetInstance<IUserValidator>(), "deployd", UserPromptBehaviour.Never);
             pipelines.EnableBasicAuthentication(basicAuthenticationConfig);
         }
 
-        protected override void RequestStartup(TinyIoCContainer container, Nancy.Bootstrapper.IPipelines pipelines, NancyContext context)
+        protected override void RequestStartup(Ninject.IKernel container, Nancy.Bootstrapper.IPipelines pipelines, NancyContext context)
         {
             base.RequestStartup(container, pipelines, context);
 
             var credentials = ExtractCredentialsFromRequest(context);
             if(credentials !=null)
-                context.CurrentUser = container.Resolve<IUserValidator>().Validate(credentials[0], credentials[1]);
+                context.CurrentUser = container.Get<IUserValidator>().Validate(credentials[0], credentials[1]);
         }
 
         private string[] ExtractCredentialsFromRequest(NancyContext context)

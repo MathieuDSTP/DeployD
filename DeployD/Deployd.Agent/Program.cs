@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -10,8 +9,10 @@ using Deployd.Core;
 using Deployd.Core.AgentConfiguration;
 using Deployd.Core.Hosting;
 using Deployd.Core.Notifications;
+using Microsoft.Practices.ServiceLocation;
 using Ninject;
 using Ninject.Modules;
+using NinjectAdapter;
 using log4net;
 using log4net.Appender;
 using log4net.Config;
@@ -38,16 +39,22 @@ namespace Deployd.Agent
                 
                 _containerWrapper = new ContainerWrapper(_kernel);
 
+                var locator = new NinjectServiceLocator(_kernel);
+                ServiceLocator.SetLocatorProvider(()=>locator);
+
                 var agentSettingsManager = _containerWrapper.GetType<IAgentSettingsManager>();
 
                 SetLogAppenderPaths(agentSettingsManager.Settings, LogManager.GetLogger("Agent.Main"));
 
                 var notificationService = _containerWrapper.GetType<INotificationService>();
 
-                var bootstraps = _containerWrapper.GetTypes<IApplicationBootstrap>().ToArray();
-                foreach(var bootstrap in bootstraps)
+                using (var scope = _containerWrapper.BeginBlock())
                 {
-                    bootstrap.OnStart();
+                    var bootstraps = scope.GetAll<IApplicationBootstrap>().ToArray();
+                    foreach (var bootstrap in bootstraps)
+                    {
+                        bootstrap.OnStart();
+                    }
                 }
 
                 new WindowsServiceRunner(args,
@@ -66,9 +73,13 @@ namespace Deployd.Agent
                                         notify: (x,message)=> notificationService.NotifyAll(EventType.SystemEvents, message))
                 .Host();
 
-                foreach (var bootstrap in bootstraps)
+                using (var scope = _containerWrapper.BeginBlock())
                 {
-                    bootstrap.OnShutdown();
+                    var bootstraps = scope.GetAll<IApplicationBootstrap>().ToArray();
+                    foreach (var bootstrap in bootstraps)
+                    {
+                        bootstrap.OnShutdown();
+                    }
                 }
  } catch (Exception ex)
             {
@@ -91,25 +102,5 @@ namespace Deployd.Agent
     [RunInstaller(true)]
     public class Installer : ServiceInstaller
     {
-    }
-
-    public class ContainerWrapper : IIocContainer
-    {
-        private readonly IKernel _kernel;
-
-        public ContainerWrapper(IKernel kernel)
-        {
-            _kernel = kernel;
-        }
-
-        public T GetType<T>()
-        {
-            return _kernel.Get<T>();
-        }
-
-        public IEnumerable<T> GetTypes<T>()
-        {
-            return _kernel.GetAll<T>();
-        }
     }
 }

@@ -17,7 +17,6 @@ namespace Deployd.Agent.WebUi.Modules
     public class HomeModule : SecureModule
     {
         private readonly IAgentSettings _agentSettings;
-        public static Func<IIocContainer> Container { get; set; }
         public static readonly List<InstallationTask> InstallationTasks = new List<InstallationTask>();
 
         public HomeModule()
