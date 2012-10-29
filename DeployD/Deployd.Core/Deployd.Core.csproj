@@ -185,6 +185,7 @@
     <Compile Include="Remoting\HubCommunicationsQueueService.cs" />
     <Compile Include="Remoting\HubCommunicator.cs" />
     <Compile Include="Remoting\IHubCommunicator.cs" />
+    <Compile Include="Security\UserCredentials.cs" />
     <Compile Include="TimedSingleExecutionTask.cs" />
   </ItemGroup>
   <ItemGroup>

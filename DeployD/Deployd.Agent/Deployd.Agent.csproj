@@ -70,6 +70,9 @@
     <Reference Include="agsXMPP">
       <HintPath>..\packages\agsXMPP.1.1.1.0\lib\agsXMPP.dll</HintPath>
     </Reference>
+    <Reference Include="BCrypt.Net">
+      <HintPath>..\packages\BCrypt-Official.0.1.107\lib\BCrypt.Net.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
     </Reference>
@@ -171,6 +174,8 @@
     <Compile Include="Services\AgentConfiguration\IAgentConfigurationManager.cs" />
     <Compile Include="Services\AgentConfiguration\IConfigurationDefaults.cs" />
     <Compile Include="Services\Authentication\AuthenticationService.cs" />
+    <Compile Include="Services\Authentication\ICredentialStore.cs" />
+    <Compile Include="Services\Authentication\InMemoryCredentialStore.cs" />
     <Compile Include="Services\HubCommunication\AgentStatusFactory.cs" />
     <Compile Include="Services\HubCommunication\HubCommunicationService.cs" />
     <Compile Include="Services\InstallationService\PackageInstallationService.cs" />
@@ -202,6 +207,7 @@
     <Compile Include="WebUi\Models\PackageVersionsViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="LICENSE.txt" />
     <Content Include="Tools\Microsoft.Web.Publishing.Tasks.Dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

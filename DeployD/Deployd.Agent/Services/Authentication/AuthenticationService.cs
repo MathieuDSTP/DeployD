@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Nancy.Authentication.Forms;
@@ -14,13 +13,16 @@ namespace Deployd.Agent.Services.Authentication
 
     public class AuthenticationService : IAuthenticationService
     {
+        private readonly ICredentialStore _credentialStore;
+
+        public AuthenticationService(ICredentialStore credentialStore)
+        {
+            _credentialStore = credentialStore;
+        }
+
         public bool CredentialsAuthenticate(string username, string password)
         {
-            // todo: hash password
-
-            // todo: check against credentials store
-
-            return true;
+            return _credentialStore.ValidateCredentials(username, password);
         }
 
         public Guid GenerateAuthenticationToken()
