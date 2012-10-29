@@ -93,10 +93,13 @@ namespace Deployd.Agent.Conventions
             Bind<INotificationService>().To<NotificationService>().InSingletonScope();
             Bind<INotifier>().To<JabberNotifier>().InSingletonScope();
 
-            // authentication
+            // security
             Bind<IUserMapper>().To<DefaultUserMapper>();
-            Bind<IAuthenticationService>().To<AuthenticationService>();
+            Bind<IAuthenticationService>().To<AuthenticationService>().InSingletonScope();
             Bind<IUserValidator>().To<DeployDUserValidator>();
+            Bind<ICredentialStore>()
+                .To<InMemoryCredentialStore>().InSingletonScope()
+                .OnActivation((x,m)=> Console.WriteLine("Activating a new credential store"));
         }
 
         public T GetService<T>()

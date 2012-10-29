@@ -20,11 +20,11 @@ namespace Deployd.Agent.WebUi.Modules
             Post["/trylogin"] = x =>
                 {
                     var authenticationService = Container().GetType<IAuthenticationService>();
-                if (authenticationService.CredentialsAuthenticate(x.Username, x.Password))
+                if (authenticationService.CredentialsAuthenticate(Request.Form["username"], Request.Form["password"]))
                 {
                     return FormsAuthentication.UserLoggedInRedirectResponse(
                         Context,
-                        authenticationService.GenerateAuthenticationToken(),
+                        authenticationService.GenerateAuthenticationToken(Request.Form["username"]),
                         DateTime.Now.AddMinutes(10));
                 }
                 else

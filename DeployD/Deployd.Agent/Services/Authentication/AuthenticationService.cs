@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using Deployd.Agent.Authentication;
 using Nancy.Authentication.Forms;
 
 namespace Deployd.Agent.Services.Authentication
 {
-    public interface IAuthenticationService
-    {
-        bool CredentialsAuthenticate(string username, string password);
-        Guid GenerateAuthenticationToken();
-    }
-
     public class AuthenticationService : IAuthenticationService
     {
         private readonly ICredentialStore _credentialStore;
@@ -25,9 +20,23 @@ namespace Deployd.Agent.Services.Authentication
             return _credentialStore.ValidateCredentials(username, password);
         }
 
-        public Guid GenerateAuthenticationToken()
+        public Guid GenerateAuthenticationToken(string username)
         {
-            return Guid.NewGuid();
+            Guid token = Guid.NewGuid();
+            _credentialStore.SetAccessToken(username, token);
+            return token;
+        }
+
+        public DeploydUserIdentity GetUserByAuthenticationToken(Guid guid)
+        {
+            var user = _credentialStore.GetByAccessToken(guid);
+            if(user !=null)
+                return new DeploydUserIdentity()
+                    {
+                        UserName=user.Username
+                    };
+
+            return null;
         }
     }
 }
