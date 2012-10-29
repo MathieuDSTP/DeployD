@@ -6,7 +6,7 @@ namespace Deployd.Core.AgentConfiguration
 {
     public class AppSettings : Dictionary<string,string>, IAgentSettings
     {
-        private XMPPSettings _xmppSettings=null;
+        private XmppSettings _xmppSettings=null;
 
         public int PackageSyncIntervalMs
         {
@@ -89,7 +89,7 @@ namespace Deployd.Core.AgentConfiguration
             {
                 if (_xmppSettings==null)
                 {
-                    _xmppSettings = new XMPPSettings()
+                    _xmppSettings = new XmppSettings()
                     {
                         Host = this["Notifications.XMPP.Host"],
                         Username = this["Notifications.XMPP.Username"],

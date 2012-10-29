@@ -44,6 +44,7 @@ namespace Deployd.Agent
                 ServiceLocator.SetLocatorProvider(()=>locator);
 
                 var agentSettingsManager = _containerWrapper.GetType<IAgentSettingsManager>();
+                agentSettingsManager.LoadSettings();
 
                 SetLogAppenderPaths(agentSettingsManager.Settings, LogManager.GetLogger("Agent.Main"));
 

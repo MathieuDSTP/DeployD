@@ -79,6 +79,7 @@ namespace Deployd.Agent.Conventions
             Bind<HubCommunicationsQueue>().ToSelf().InSingletonScope();
             Bind<IHubCommunicator>().To<HubCommunicator>();
 
+            Bind<IAgentSettingsStore>().To<DocumentStoreSettingsStore>().InSingletonScope();
             Bind<IAgentConfigurationManager>().To<AgentConfigurationManager>().InSingletonScope();
             Bind<IAgentSettingsManager>().To<AgentSettingsManager>().InSingletonScope();
             Bind<IAgentSettings>().ToMethod(context => GetService<IAgentSettingsManager>().Settings);

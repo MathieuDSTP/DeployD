@@ -5,6 +5,7 @@ namespace Deployd.Core.AgentConfiguration
 {
     public class AgentSettings : IAgentSettings
     {
+        public string Id { get; set; }
         //public static readonly string AgentProgramDataPath = AppDomain.CurrentDomain.BaseDirectory;
 
         public static readonly string AgentProgramDataPath =
@@ -34,23 +35,13 @@ namespace Deployd.Core.AgentConfiguration
         public int MaxConcurrentInstallations { get; set; }
 
         public bool EnableConfigurationSync { get; set; }
-        public IXMPPSettings XMPPSettings { get; private set; }
-        public string NotificationRecipients { get; private set; }
+        public IXMPPSettings XMPPSettings { get; set; }
+        public string NotificationRecipients { get; set; }
 
         public AgentSettings()
         {
             PackageSyncIntervalMs = 1000;
             ConfigurationSyncIntervalMs = 1000;
         }
-    }
-
-    public class XMPPSettings : IXMPPSettings
-    {
-        public bool Enabled { get; set; }
-        public string Host { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public int Port { get; set; }
-        public string Recipients { get; set; }
     }
 }
