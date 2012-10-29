@@ -142,7 +142,7 @@ namespace Deployd.Core.Hosting
             do
             {
                 command = Console.ReadLine();
-                if (command == "quit")
+                if (command == "q")
                     break;
                 else if (command=="notify")
                 {

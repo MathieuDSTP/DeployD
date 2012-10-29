@@ -1,5 +1,6 @@
 using System;
 using Deployd.Agent.Authentication;
+using Deployd.Agent.Bootstrap;
 using Deployd.Agent.Services.Authentication;
 using Deployd.Agent.Services.HubCommunication;
 using Deployd.Agent.Services;
@@ -30,6 +31,9 @@ namespace Deployd.Agent.Conventions
     {
         public override void Load()
         {
+            // bootstrap
+            Bind<IApplicationBootstrap>().To<AdminAccountBootstrap>();
+
             // configuration
             Bind<IAgentWatchListManager>().To<AgentWatchListManager>();
             Bind<IAgentWatchList>().ToMethod(ctx => ctx.Kernel.Get<IAgentWatchListManager>().Build());

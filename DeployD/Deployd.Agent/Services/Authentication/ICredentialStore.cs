@@ -8,7 +8,7 @@ namespace Deployd.Agent.Services.Authentication
         void AddUser(string username, string password);
         void DeleteUser(string username);
         void ChangePassword(string username, string oldPassword, string newPassword);
-        void ResetPassword(string passwordResetToken, string newPassword);
+        void ResetPassword(string compressedToken, string newPassword);
         string CreatePasswordResetToken(string username);
         bool ValidateCredentials(string username, string password);
         UserCredentials GetByAccessToken(Guid guid);

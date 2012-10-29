@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.ServiceProcess;
+using Deployd.Agent.Bootstrap;
 using Deployd.Agent.Conventions;
 using Deployd.Core;
 using Deployd.Core.AgentConfiguration;
@@ -42,6 +44,12 @@ namespace Deployd.Agent
 
                 var notificationService = _containerWrapper.GetType<INotificationService>();
 
+                var bootstraps = _containerWrapper.GetTypes<IApplicationBootstrap>().ToArray();
+                foreach(var bootstrap in bootstraps)
+                {
+                    bootstrap.OnStart();
+                }
+
                 new WindowsServiceRunner(args,
                                         () => _kernel.GetAll<IWindowsService>().ToArray(),
                                             installationSettings: (serviceInstaller, serviceProcessInstaller) =>
@@ -57,6 +65,11 @@ namespace Deployd.Agent
                                         agentSettingsManager:agentSettingsManager,
                                         notify: (x,message)=> notificationService.NotifyAll(EventType.SystemEvents, message))
                 .Host();
+
+                foreach (var bootstrap in bootstraps)
+                {
+                    bootstrap.OnShutdown();
+                }
  } catch (Exception ex)
             {
                 Logger.Error("Unhandled exception", ex);
@@ -92,6 +105,11 @@ namespace Deployd.Agent
         public T GetType<T>()
         {
             return _kernel.Get<T>();
+        }
+
+        public IEnumerable<T> GetTypes<T>()
+        {
+            return _kernel.GetAll<T>();
         }
     }
 }

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Deployd.Core.Security;
+using Nancy.Helpers;
 using log4net;
 
 namespace Deployd.Agent.Services.Authentication
@@ -9,19 +11,16 @@ namespace Deployd.Agent.Services.Authentication
     public class InMemoryCredentialStore  : ICredentialStore
     {
         private static readonly List<UserCredentials> CredentialStore = new List<UserCredentials>();
+        private static readonly List<PasswordResetToken> PasswordResetTokens = new List<PasswordResetToken>();
         private ILog log = LogManager.GetLogger(typeof (InMemoryCredentialStore));
 
         public InMemoryCredentialStore()
         {
-            log.DebugFormat("new inmemory credential store");
-            // create a default admin account for the time being
-            if (CredentialStore.Count==0)
-                CredentialStore.Add(new UserCredentials(){Username="admin", HashedPassword = BCrypt.Net.BCrypt.HashPassword("admin123")});
         }
 
         public void AddUser(string username, string password)
         {
-            throw new NotImplementedException();
+            CredentialStore.Add(new UserCredentials(){Username=username, HashedPassword = BCrypt.Net.BCrypt.HashPassword(password)});
         }
 
         public void DeleteUser(string username)
@@ -34,14 +33,65 @@ namespace Deployd.Agent.Services.Authentication
             throw new NotImplementedException();
         }
 
-        public void ResetPassword(string passwordResetToken, string newPassword)
+        public void ResetPassword(string compressedToken, string newPassword)
         {
-            throw new NotImplementedException();
+            Guid tokenAsGuid=ExpandGuid(compressedToken);
+            var resetToken = PasswordResetTokens.SingleOrDefault(x => x.ResetToken == tokenAsGuid);
+            if (resetToken != null)
+            {
+                var credentials = GetByUsername(resetToken.Username);
+                if (credentials != null)
+                {
+                    credentials.HashedPassword = BCrypt.Net.BCrypt.HashPassword(newPassword);
+                }
+                else
+                {
+                    throw new InvalidOperationException("No such user to reset password for");
+                }
+                PasswordResetTokens.Remove(resetToken);
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException("compressedToken", "Reset token not found");
+            }
+        }
+
+        private string CompressGuid(Guid guid)
+        {
+            try
+            {
+                var compressGuid = new Ascii85().Encode(guid.ToByteArray());
+                return compressGuid;
+            } catch
+            {
+                throw new ArgumentException("Not a valid guid");
+            }
+        }
+
+        private Guid ExpandGuid(string compressed)
+        {
+
+            return new Guid(new Ascii85().Decode(HttpUtility.UrlDecode(compressed)));
         }
 
         public string CreatePasswordResetToken(string username)
         {
-            throw new NotImplementedException();
+            var resetToken = Guid.NewGuid();
+            var existingResetHolder =
+                PasswordResetTokens.SingleOrDefault(r => r.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+
+            if (existingResetHolder != null)
+            {
+                existingResetHolder.ResetToken = resetToken;
+                existingResetHolder.Expiry = DateTime.Now.AddHours(1);
+            }
+            else
+            {
+                PasswordResetTokens.Add(new PasswordResetToken()
+                    {Username = username, ResetToken = resetToken, Expiry = DateTime.Now.AddHours(1)});
+            }
+
+            return CompressGuid(resetToken);
         }
 
         public bool ValidateCredentials(string username, string password)
@@ -74,5 +124,12 @@ namespace Deployd.Agent.Services.Authentication
             return CredentialStore.SingleOrDefault(
                 uc=>uc.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase));        
         }
+    }
+
+    internal class PasswordResetToken
+    {
+        public string Username { get; set; }
+        public Guid ResetToken { get; set; }
+        public DateTime Expiry { get; set; }
     }
 }

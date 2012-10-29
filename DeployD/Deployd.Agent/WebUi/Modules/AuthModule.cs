@@ -6,6 +6,8 @@ using Deployd.Agent.Services.Authentication;
 using Deployd.Core.Hosting;
 using Nancy;
 using Nancy.Authentication.Forms;
+using Nancy.Helpers;
+using Nancy.Responses;
 
 namespace Deployd.Agent.WebUi.Modules
 {
@@ -34,6 +36,33 @@ namespace Deployd.Agent.WebUi.Modules
             };
 
             Get["/logout"] = x => { return FormsAuthentication.LogOutAndRedirectResponse(Context, "/"); };
+
+            Get["/resetpassword/{token}"] = x =>
+                {
+                    try
+                    {
+                        new Guid(new Ascii85().Decode(HttpUtility.UrlDecode(x.token)));
+                    } catch
+                    {
+                        return Response.AsRedirect("~/");
+                    }
+
+                    return View["resetpassword.cshtml", new PasswordResetViewModel() {PasswordResetToken = x.token}];
+                };
+            Post["/resetpassword/{token}"] = x =>
+                {
+                    var credentialStore = Container().GetType<ICredentialStore>();
+                    credentialStore.ResetPassword(x.token, Request.Form["password"]);
+                    return Response.AsRedirect("/passwordreset");
+                };
+            Get["/passwordreset"] = x => View["passwordreset.cshtml"];
         }
+    }
+
+    public class PasswordResetViewModel
+    {
+        public string PasswordResetToken { get; set; }
+        public string Password { get; set; }
+        public string ConfirmPassword { get; set; }
     }
 }
