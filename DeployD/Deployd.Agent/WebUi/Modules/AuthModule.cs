@@ -53,7 +53,7 @@ namespace Deployd.Agent.WebUi.Modules
                             return Response.AsRedirect("~/");
                         }
 
-                        var credentialStore = Container().GetType<ICredentialStore>();
+                        var credentialStore = RequestScope.Get<ICredentialStore>();
                         if (!credentialStore.VerifyPasswordResetToken(x.token))
                         {
                             return Response.AsRedirect("~/");

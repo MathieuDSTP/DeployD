@@ -6,5 +6,6 @@ namespace Deployd.Core.AgentConfiguration
     {
         IAgentSettings LoadSettings();
         event EventHandler SettingsChanged;
+        void UpdateSettings(dynamic settingsValues);
     }
 }

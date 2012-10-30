@@ -29,6 +29,10 @@ namespace Deployd.Core.AgentConfiguration
         }
 
         public event EventHandler SettingsChanged;
+        public void UpdateSettings(dynamic settingsValues)
+        {
+            throw new NotImplementedException();
+        }
 
         public IAgentSettings LoadSettings(KeyValueConfigurationCollection settings)
         {

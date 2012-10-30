@@ -16,7 +16,7 @@ namespace Deployd.Core.AgentConfiguration
         string BaseInstallationPath { get; }
         string MsDeployServiceUrl { get; }
         string LogsDirectory { get; }
-        string HubAddress { get;  }
+        string HubAddress { get; set; }
         int MaxConcurrentInstallations { get; }
         bool EnableConfigurationSync { get; }
         IXMPPSettings XMPPSettings { get; }

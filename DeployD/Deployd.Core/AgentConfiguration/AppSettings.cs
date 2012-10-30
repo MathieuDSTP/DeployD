@@ -70,7 +70,7 @@ namespace Deployd.Core.AgentConfiguration
 
         public string HubAddress
         {
-            get { return this["Hub.Address"]; }
+            get { return this["Hub.Address"]; }set { }
         }
 
         public bool EnableConfigurationSync

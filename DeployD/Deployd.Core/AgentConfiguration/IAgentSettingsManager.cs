@@ -5,5 +5,6 @@ namespace Deployd.Core.AgentConfiguration
         IAgentSettings LoadSettings();
         IAgentSettings Settings { get; }
         void UnloadSettings();
+        void UpdateSettings(dynamic settingsValues);
     }
 }

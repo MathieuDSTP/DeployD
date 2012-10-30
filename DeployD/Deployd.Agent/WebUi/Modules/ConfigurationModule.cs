@@ -9,7 +9,9 @@ using Deployd.Agent.Services.PackageDownloading;
 using Deployd.Core.AgentConfiguration;
 using Deployd.Core.Hosting;
 using Nancy;
+using Nancy.ModelBinding;
 using Nancy.Responses;
+using Ninject;
 
 namespace Deployd.Agent.WebUi.Modules
 {
@@ -19,22 +21,28 @@ namespace Deployd.Agent.WebUi.Modules
         public ConfigurationModule() : base("/configuration")
         {
             Get["/"] = x =>
-                           {
-                               var agentWatchList = Container().GetType<IAgentWatchList>();
-                               var agentSettings = Container().GetType<IAgentSettings>();
+                {
+                    var agentWatchList = RequestScope.Get<IAgentWatchList>();
+                    var agentSettings = RequestScope.Get<IAgentSettingsManager>();
 
-                               var configurationViewModel = new ConfigurationViewModel()
-                                                                {
-                                                                    WatchList = agentWatchList,
-                                                                    Settings = agentSettings
-                                                                };
+                    var configurationViewModel = new ConfigurationViewModel()
+                        {
+                            WatchList = agentWatchList,
+                            Settings = agentSettings.LoadSettings()
+                        };
 
-                               return Negotiate.WithView("configuration/index.cshtml").WithModel(configurationViewModel);
-                           };
+                    return Negotiate.WithView("configuration/index.cshtml").WithModel(configurationViewModel);
+                };
+            Post["/save"] = x =>
+                {
+                    var settingsManager = RequestScope.Get<IAgentSettingsManager>();
+                    settingsManager.UpdateSettings(this.Bind<AgentSettings>());
+                    return Response.AsRedirect("~/configuration");
+                };
 
             Get["/watchList"] = x =>
                                  {
-                                     var agentWatchListManager = Container().GetType<IAgentWatchListManager>();
+                                     var agentWatchListManager = RequestScope.Get<IAgentWatchListManager>();
                                      var watchList = agentWatchListManager.Build();
                                      var watchSample = new AgentWatchList()
                                                            {
@@ -58,7 +66,7 @@ namespace Deployd.Agent.WebUi.Modules
 
             Put["/watchList"] = x =>
                                     {
-                                        var agentWatchListManager = Container().GetType<IAgentWatchListManager>();
+                                        var agentWatchListManager = RequestScope.Get<IAgentWatchListManager>();
                                         using (var streamReader = new StreamReader(Request.Body))
                                         {
                                             try

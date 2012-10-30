@@ -35,6 +35,11 @@ namespace Deployd.Core.AgentConfiguration
             _settings = null;
         }
 
+        public void UpdateSettings(dynamic settingsValues)
+        {
+            _agentSettingsStore.UpdateSettings(settingsValues);
+        }
+
         static AgentSettingsManager()
         {
             ConfigurationDefaults = new Dictionary<string, string>

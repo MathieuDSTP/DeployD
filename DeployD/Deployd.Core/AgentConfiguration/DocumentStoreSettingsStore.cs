@@ -63,5 +63,24 @@ namespace Deployd.Core.AgentConfiguration
         }
 
         public event EventHandler SettingsChanged;
+        public void UpdateSettings(dynamic settingsValues)
+        {
+            var settings = _session.Load<AgentSettings>("AgentSettings/1");
+            if (settings == null)
+            {
+                settings = Defaults;
+            }
+            settings.HubAddress = settingsValues.HubAddress;
+            settings.BaseInstallationPath = settingsValues.BaseInstallationPath;
+            settings.NuGetRepository = settingsValues.NuGetRepository;
+            settings.DeploymentEnvironment = settingsValues.DeploymentEnvironment;
+            settings.NotificationRecipients = settingsValues.NotificationRecipients;
+
+            settings.PackageSyncIntervalMs = settingsValues.PackageSyncIntervalMs;
+            settings.ConfigurationSyncIntervalMs = settingsValues.ConfigurationSyncIntervalMs;
+            settings.MaxConcurrentInstallations = settingsValues.MaxConcurrentInstallations;
+
+            _session.SaveChanges();
+        }
     }
 }
