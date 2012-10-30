@@ -35,7 +35,7 @@ namespace Deployd.Agent.Services.PackageDownloading
         protected readonly IRetrievePackageQuery AllPackagesQuery;
         protected readonly ILocalPackageCache AgentCache;
         private CompletedInstallationTaskList _installationResults;
-        private readonly IAgentWatchList _watchList;
+        private readonly IAgentWatchListManager _watchListManager;
         private readonly IInstallationManager _installationManager;
         private readonly INotificationService _notificationService;
 
@@ -52,7 +52,7 @@ namespace Deployd.Agent.Services.PackageDownloading
                                         IPackagesList allPackagesList,
             ICurrentlyDownloadingList currentlyDownloadingList, 
             CompletedInstallationTaskList installationResults,
-            IAgentWatchList watchList,
+            IAgentWatchListManager watchListManager,
             IInstallationManager installationManager,INotificationService notificationService)
         {
             _settingsManager = agentSettingsManager;
@@ -66,7 +66,7 @@ namespace Deployd.Agent.Services.PackageDownloading
             _allPackagesList = allPackagesList;
             _currentlyDownloadingList = currentlyDownloadingList;
             _installationResults = installationResults;
-            _watchList = watchList;
+            _watchListManager = watchListManager;
             _installationManager = installationManager;
             _notificationService = notificationService;
             TimedTask = new TimedSingleExecutionTask(agentSettingsManager.Settings.PackageSyncIntervalMs, FetchPackages,
@@ -135,7 +135,8 @@ namespace Deployd.Agent.Services.PackageDownloading
                 _currentlyDownloadingList.RemoveAll(p=>p.Equals(package.Title, StringComparison.InvariantCulture));
                 _hubCommunicator.SendStatusToHub(AgentStatusFactory.BuildStatus(_allPackagesList, AgentCache, _installCache, _runningTasks,
                                                                                     _settingsManager, _currentlyDownloadingList, _installationResults));
-                var watch = _watchList.Packages.SingleOrDefault(p => p.Name == package.Id);
+                var watchList = _watchListManager.Load();
+                var watch = watchList.Packages.SingleOrDefault(p => p.Name == package.Id);
                 if (watch != null)
                 {
                     if (watch.AutoDeploy)

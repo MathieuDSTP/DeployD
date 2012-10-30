@@ -6,12 +6,14 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using Deployd.Agent.Services.PackageDownloading;
+using Deployd.Agent.WebUi.Models;
 using Deployd.Core.AgentConfiguration;
 using Deployd.Core.Hosting;
 using Nancy;
 using Nancy.ModelBinding;
 using Nancy.Responses;
 using Ninject;
+using NuGet;
 
 namespace Deployd.Agent.WebUi.Modules
 {
@@ -41,52 +43,83 @@ namespace Deployd.Agent.WebUi.Modules
                 };
 
             Get["/watchList"] = x =>
-                                 {
-                                     var agentWatchListManager = RequestScope.Get<IAgentWatchListManager>();
-                                     var watchList = agentWatchListManager.Build();
-                                     var watchSample = new AgentWatchList()
-                                                           {
-                                                               Groups = new List<string>(new[] { "Web", "Services" }),
-                                                               Packages = new List<WatchPackage>(new[]
-                                                                   {
-                                                                       new WatchPackage(){Name="package1"}, 
-                                                                       new WatchPackage(){ Name="package2"}
-                                                                   })
-                                                           };
-                                     var serializer = new XmlSerializer(typeof (AgentWatchList));
-                                     StringBuilder sb = new StringBuilder();
-                                     using (var writer = XmlWriter.Create(sb))
-                                     {
-                                         serializer.Serialize(writer, watchSample);
-                                         writer.Flush();
-                                     }
+                {
+                    var watchList = RequestScope.Get<IAgentWatchListManager>().Load();
+                    var settings = RequestScope.Get<IAgentSettingsManager>().Settings;
+                    var feed = RequestScope.Get<IPackageRepositoryFactory>().CreateRepository(settings.NuGetRepository);
+                    var packages = feed.GetPackages().ToList();
+                    var groupedTags = packages.Select(p => (p.Tags??"").Split(new[]{',',' '}, StringSplitOptions.RemoveEmptyEntries));
+                    var allTags = new HashSet<string>();
+                    foreach(var tagGroup in groupedTags)
+                    {
+                        foreach(var tag in tagGroup)
+                            if (!allTags.Contains(tag))
+                            {
+                                allTags.Add(tag);
+                            }
+                    }
+                    var viewModel = new WatchListConfigurationViewModel();
+                    viewModel.Groups = allTags
+                        .OrderBy(t => t)
+                        .Select(t=>new WatchListItemViewModel()
+                            {
+                                Name=t,
+                                Selected = watchList.Groups.Any(group=>group.Equals(t, StringComparison.InvariantCultureIgnoreCase))
+                            });
+                    viewModel.Packages = packages
+                        .GroupBy(p => p.Id).OrderBy(p => p.Key)
+                        .Select(p => new WatchListItemViewModel()
+                            {
+                                Name = p.Key,
+                                Selected = watchList.Packages.Any(package => package.Name.Equals(p.Key, StringComparison.InvariantCultureIgnoreCase)),
+                                AutoDeploy = watchList.Packages.Any(package => package.Name.Equals(p.Key, StringComparison.InvariantCultureIgnoreCase) && package.AutoDeploy)
+                            });
 
-                                     return new TextResponse(sb.ToString(), "text/xml");
-                                 };
+                    return Negotiate.WithView("configuration/watchlist.cshtml").WithModel(viewModel);
+                };
 
-            Put["/watchList"] = x =>
-                                    {
-                                        var agentWatchListManager = RequestScope.Get<IAgentWatchListManager>();
-                                        using (var streamReader = new StreamReader(Request.Body))
-                                        {
-                                            try
-                                            {
-                                                agentWatchListManager.SaveWatchList(streamReader.ReadToEnd());
-                                            } catch (Exception ex)
-                                            {
-                                                return new TextResponse(HttpStatusCode.BadRequest, ex.Message);
-                                            }
-                                        }
+            Post["/watchList"] = x =>
+                {
+                    var settings = RequestScope.Get<IAgentSettingsManager>().Settings;
+                    var feed = RequestScope.Get<IPackageRepositoryFactory>().CreateRepository(settings.NuGetRepository);
+                    var packages = feed.GetPackages().ToList();
+                    var groupedTags = packages.Select(p => (p.Tags ?? "").Split(new[]{',',' '}, StringSplitOptions.RemoveEmptyEntries));
+                    var allTags = new HashSet<string>();
+                    foreach (var tagGroup in groupedTags)
+                    {
+                        foreach (var tag in tagGroup)
+                            if (!allTags.Contains(tag))
+                            {
+                                allTags.Add(tag);
+                            }
+                    }
+                    var groups = allTags.OrderBy(t => t).ToList();
+                    var packageIds = packages.GroupBy(p => p.Id).OrderBy(p => p.Key).Select(p => p.Key);
 
-                                        return new HeadResponse(new Response(){StatusCode = HttpStatusCode.Accepted});
-                                    };
+                    var watchList = new AgentWatchList();
+                    foreach(var group in groups)
+                    {
+                        bool selected = false;
+                        bool.TryParse(Request.Form[group], out selected);
+                        if (selected)
+                        {
+                            watchList.Groups.Add(group);
+                        }
+                    }
+                    foreach (var packageId in packageIds)
+                    {
+                        bool selected = false;
+                        bool.TryParse(Request.Form[packageId], out selected);
+                        if (selected)
+                        {
+                            bool auto = false;
+                            bool.TryParse(Request.Form[packageId + "_auto"], out auto);
+                            watchList.Packages.Add(new WatchPackage(){Name=packageId, AutoDeploy = auto});
+                        }
+                    }
+
+                    return Response.AsRedirect("/configuration/watchList");
+                };
         }
-    }
-
-    public class ConfigurationViewModel
-    {
-        public IAgentWatchList WatchList { get; set; }
-
-        public IAgentSettings Settings { get; set; }
     }
 }

@@ -10,9 +10,9 @@ namespace Deployd.Agent.Services.PackageDownloading
     public class AllPackagesList : List<IPackage>, IPackagesList
     {
         private readonly IAgentConfigurationManager _agentConfiguration;
-        private readonly IAgentSettings _agentSettings;
+        private readonly IAgentSettingsManager _agentSettings;
 
-        public AllPackagesList(IAgentConfigurationManager agentConfiguration, IAgentSettings agentSettings)
+        public AllPackagesList(IAgentConfigurationManager agentConfiguration, IAgentSettingsManager agentSettings)
         {
             _agentConfiguration = agentConfiguration;
             _agentSettings = agentSettings;
@@ -20,7 +20,7 @@ namespace Deployd.Agent.Services.PackageDownloading
 
         public IEnumerable<IPackage> GetWatched()
         {
-            var watchedPackages = _agentConfiguration.GetWatchedPackages(_agentSettings.DeploymentEnvironment);
+            var watchedPackages = _agentConfiguration.GetWatchedPackages(_agentSettings.Settings.DeploymentEnvironment);
             return this.Where(p => watchedPackages.Any(watched => watched.Name == p.Id));
         }
     }

@@ -48,7 +48,7 @@ namespace Deployd.Agent.Test.Unit.Services.AgentConfiguration
         {
             var agentWatchList = new AgentWatchList() {Groups = new List<string>() {"Web", "Backoffice", "Reporting"}};
             var agentWatchListManager = new Mock<IAgentWatchListManager>();
-            agentWatchListManager.Setup(m => m.Build()).Returns(agentWatchList);
+            agentWatchListManager.Setup(m => m.Load()).Returns(agentWatchList);
             _configurationDefaults = new Mock<IConfigurationDefaults>();
             _configurationDefaults.SetupGet(c => c.AgentConfigurationFile).Returns(Guid.NewGuid().ToString());
             _configurationDefaults.SetupGet(c => c.AgentConfigurationFileLocation).Returns(Environment.CurrentDirectory);

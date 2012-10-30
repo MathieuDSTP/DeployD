@@ -1,0 +1,33 @@
+﻿@using System.Linq
+@using Deployd.Agent.WebUi.Models
+@{
+	Layout  = "layout.cshtml";
+}
+
+<h2>Watch List</h2>
+
+<form method="post" action="/configuration/watchlist">
+    <fieldset>
+        <legend>Groups</legend>
+        @foreach (WatchListItemViewModel tag in Model.Groups)
+        {
+            <input type="checkbox" id="@tag.Name" name="@tag.Name" value="true"@if (tag.Selected){<text> checked="checked"</text>}/><label for="@tag.Name">@tag.Name</label> 
+        }
+    </fieldset>
+
+    <fieldset>
+        <legend>Packages</legend>
+        @foreach (WatchListItemViewModel package in Model.Packages)
+        {
+            <p>
+                <input type="checkbox" id="@package.Name" name="@package.Name" value="true"@if (package.Selected){<text> checked="checked"</text>} /><label for="@package.Name">@package.Name</label>
+                <select name="@(package.Name)_auto">
+                    <option value="true"@if (package.AutoDeploy){<text> selected</text>}>Install new versions automatically</option>
+                    <option value="false"@if (!package.AutoDeploy){<text> selected</text>}>Cache new versions but don't install</option>
+                </select>
+            </p>
+        }
+    </fieldset>
+
+    <input type="submit" value="Save Changes"/>
+</form>

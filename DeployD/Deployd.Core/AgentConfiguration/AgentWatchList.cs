@@ -6,6 +6,15 @@ namespace Deployd.Core.AgentConfiguration
     [XmlRoot("watch")]
     public class AgentWatchList : IAgentWatchList
     {
+        public AgentWatchList()
+        {
+            Groups = new List<string>();
+            Packages = new List<WatchPackage>();
+        }
+
+        [XmlIgnore]
+        public string Id { get; set; }
+
         [XmlArray("groups")]
         [XmlArrayItem("group")]
         public List<string> Groups { get; set; }

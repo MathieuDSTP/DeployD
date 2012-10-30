@@ -18,34 +18,34 @@ namespace Deployd.Agent.WebUi.Modules
         {
             Get["/"] = x =>
             {
-                var agentSettings = Container().GetType<IAgentSettings>();
+                var agentSettings = Container().GetType<IAgentSettingsManager>();
                 var fileSystem = Container().GetType<IFileSystem>();
-                var packageList = GetPackageLogDirectories(fileSystem, agentSettings);
+                var packageList = GetPackageLogDirectories(fileSystem, agentSettings.Settings);
                 packageList.Insert(0,"server");
                 return Negotiate.WithView("logs/packages.cshtml").WithModel(packageList);
             };
 
             Get["/{packageId}"] = x =>
             {
-                var agentSettings = Container().GetType<IAgentSettings>();
+                var agentSettings = Container().GetType<IAgentSettingsManager>();
                 var fileSystem = Container().GetType<IFileSystem>();
-                LogListViewModel logList = GetLogList(fileSystem, agentSettings, x.packageId);
+                LogListViewModel logList = GetLogList(fileSystem, agentSettings.Settings, x.packageId);
                 return Negotiate.WithView("logs/list.cshtml").WithModel(logList);
             };
 
             Get["/{packageId}/{filename}"] = x =>
             {
-                var agentSettings = Container().GetType<IAgentSettings>();
+                var agentSettings = Container().GetType<IAgentSettingsManager>();
                 var fileSystem = Container().GetType<IFileSystem>();
-                LogViewModel log = GetLog(fileSystem, agentSettings, x.packageId, x.filename);
+                LogViewModel log = GetLog(fileSystem, agentSettings.Settings, x.packageId, x.filename);
                 return Negotiate.WithView("logs/log.cshtml").WithModel(log);
             };
 
             Get["/server"] = x =>
             {
-                var agentSettings = Container().GetType<IAgentSettings>();
+                var agentSettings = Container().GetType<IAgentSettingsManager>();
                 var fileSystem = Container().GetType<IFileSystem>();
-                var viewModel = LoadServerLogList(fileSystem, agentSettings);
+                var viewModel = LoadServerLogList(fileSystem, agentSettings.Settings);
                 return Negotiate.WithView("logs/list.cshtml").WithModel(viewModel);
             };
 
@@ -57,9 +57,9 @@ namespace Deployd.Agent.WebUi.Modules
 
                 try
                 {
-                    var agentSettings = Container().GetType<IAgentSettings>();
+                    var agentSettings = Container().GetType<IAgentSettingsManager>();
                     var fileSystem = Container().GetType<IFileSystem>();
-                    var viewModel = LoadLogViewModel(logFilename, fileSystem, agentSettings, true);
+                    var viewModel = LoadLogViewModel(logFilename, fileSystem, agentSettings.Settings, true);
                     return Negotiate.WithView("logs/log.cshtml").WithModel(viewModel);
                 }catch(ArgumentException)
                 {

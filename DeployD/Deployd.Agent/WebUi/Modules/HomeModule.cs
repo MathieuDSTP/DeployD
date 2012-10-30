@@ -17,17 +17,17 @@ namespace Deployd.Agent.WebUi.Modules
 {
     public class HomeModule : SecureModule
     {
-        private readonly IAgentSettings _agentSettings;
         public static readonly List<InstallationTask> InstallationTasks = new List<InstallationTask>();
 
         public HomeModule()
         {
-            _agentSettings = Container().GetType<IAgentSettings>();
+            
             
             Get["/"] = x => View["index.cshtml"];
 
             Get["/sitrep"] = x =>
                                  {
+                var _agentSettings = RequestScope.Get<IAgentSettingsManager>();
                 var _log = RequestScope.Get<ILogger>();
                 _log.Debug(string.Format("{0} asked for status", Request.UserHostAddress));
                 var cache = Container().GetType<ILocalPackageCache>();
@@ -62,7 +62,7 @@ namespace Deployd.Agent.WebUi.Modules
                                 LastMessage = t.ProgressReports.Count > 0 ? t.ProgressReports.LastOrDefault().Message : ""
                             }).ToList(),
                     AvailableVersions = cache.AllCachedPackages().Select(p => p.Version.ToString()).Distinct().OrderByDescending(s => s),
-                    Environment = _agentSettings.DeploymentEnvironment,
+                    Environment = _agentSettings.Settings.DeploymentEnvironment,
                 };
 
                 return Negotiate.WithView("sitrep.cshtml").WithModel(model);

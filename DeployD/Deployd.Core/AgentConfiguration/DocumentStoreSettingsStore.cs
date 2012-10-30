@@ -81,6 +81,9 @@ namespace Deployd.Core.AgentConfiguration
             settings.MaxConcurrentInstallations = settingsValues.MaxConcurrentInstallations;
 
             _session.SaveChanges();
+
+            if (SettingsChanged != null)
+                SettingsChanged(this, new EventArgs());
         }
     }
 }

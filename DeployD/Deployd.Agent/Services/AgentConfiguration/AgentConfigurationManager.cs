@@ -43,7 +43,7 @@ namespace Deployd.Agent.Services.AgentConfiguration
         public IList<WatchPackage> GetWatchedPackages(string environmentName)
         {
             var packages = new List<WatchPackage>();
-            var watchList = _agentWatchListManager.Build();
+            var watchList = _agentWatchListManager.Load();
             if (watchList.Groups != null)
             {
                 var groups = GetConfiguration().Environments.Where(g => watchList.Groups.Contains(g.Name));

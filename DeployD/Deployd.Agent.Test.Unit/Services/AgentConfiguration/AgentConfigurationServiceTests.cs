@@ -12,6 +12,7 @@ namespace Deployd.Agent.Test.Unit.Services.AgentConfiguration
     public class AgentConfigurationServiceTests
     {
         private AgentConfigurationService _acs;
+        private Mock<IAgentSettingsManager> _agentSettingsManager;
         private AgentSettings _agentSettings;
         private Mock<IAgentConfigurationDownloader> _configurationDownloader;
         private Mock<ILogger> _logger = new Mock<ILogger>();
@@ -19,9 +20,14 @@ namespace Deployd.Agent.Test.Unit.Services.AgentConfiguration
         [SetUp]
         public void SetUp()
         {
-            _agentSettings = new AgentSettings();
+            _agentSettings=new AgentSettings();
+            _agentSettingsManager = new Mock<IAgentSettingsManager>();
+            _agentSettingsManager
+                .SetupGet(x => x.Settings)
+                .Returns(_agentSettings);
+
             _configurationDownloader = new Mock<IAgentConfigurationDownloader>();
-            _acs = new AgentConfigurationService(_agentSettings, _configurationDownloader.Object, _logger.Object);
+            _acs = new AgentConfigurationService(_agentSettingsManager.Object, _configurationDownloader.Object, _logger.Object);
         }
 
         [Test]
@@ -35,7 +41,7 @@ namespace Deployd.Agent.Test.Unit.Services.AgentConfiguration
         [Test]
         public void Ctor_NullDownloader_ThrowsArgumentNullException()
         {
-            var ex = Assert.Throws<ArgumentNullException>(() => new AgentConfigurationService(_agentSettings, null, _logger.Object));
+            var ex = Assert.Throws<ArgumentNullException>(() => new AgentConfigurationService(_agentSettingsManager.Object, null, _logger.Object));
 
             Assert.That(ex.ParamName, Is.EqualTo("configurationDownloader"));
         }

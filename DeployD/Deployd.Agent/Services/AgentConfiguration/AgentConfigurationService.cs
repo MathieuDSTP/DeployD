@@ -15,13 +15,13 @@ namespace Deployd.Agent.Services.AgentConfiguration
         private readonly IAgentConfigurationDownloader _configurationDownloader;
         private readonly ILogger _logger;
 
-        public AgentConfigurationService(IAgentSettings agentSettings, IAgentConfigurationDownloader configurationDownloader, ILogger logger)
+        public AgentConfigurationService(IAgentSettingsManager agentSettings, IAgentConfigurationDownloader configurationDownloader, ILogger logger)
         {
             if (agentSettings == null) throw new ArgumentNullException("agentSettings");
             if (configurationDownloader == null) throw new ArgumentNullException("configurationDownloader");
             _configurationDownloader = configurationDownloader;
             _logger = logger;
-            TimedTask = new TimedSingleExecutionTask(agentSettings.ConfigurationSyncIntervalMs, DownloadConfiguration,logger, true);
+            TimedTask = new TimedSingleExecutionTask(agentSettings.Settings.ConfigurationSyncIntervalMs, DownloadConfiguration,logger, true);
         }
 
         ~AgentConfigurationService()

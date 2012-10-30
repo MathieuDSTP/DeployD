@@ -29,7 +29,7 @@ namespace Deployd.Agent.Test.Unit.Services.PackageDownloading
         private Mock<IPackageRepositoryFactory> _packageRepositoryFactory = new Mock<IPackageRepositoryFactory>();
         private Mock<ICurrentlyDownloadingList> _currentlyDownloadingList = new Mock<ICurrentlyDownloadingList>();
         private Mock<CompletedInstallationTaskList> _installationResultDictionary = new Mock<CompletedInstallationTaskList>();
-        protected Mock<IAgentWatchList> _agentWatchList = new Mock<IAgentWatchList>();
+        protected Mock<IAgentWatchListManager> _agentWatchList = new Mock<IAgentWatchListManager>();
         protected Mock<IInstallationManager> _installationManager = new Mock<IInstallationManager>();
         private IPackagesList _allPackagesList;
         private const string PACKAGE_ID = "packageId";
@@ -50,7 +50,7 @@ namespace Deployd.Agent.Test.Unit.Services.PackageDownloading
             _pds = new PackageDownloadingService(_agentSettings.Object, _packageRepoMock.Object, _packageCacheMock.Object,
                 _agentConfigManagerMock.Object, _logger.Object, _hubCommunicator.Object, _installCached.Object, _packageRepositoryFactory.Object, _allPackagesList, _currentlyDownloadingList.Object, _installationResultDictionary.Object,
                 _agentWatchList.Object, _installationManager.Object, new Mock<INotificationService>().Object);
-            _allPackagesList = new AllPackagesList(_agentConfigManagerMock.Object, _agentSettings.Object.Settings);
+            _allPackagesList = new AllPackagesList(_agentConfigManagerMock.Object, _agentSettings.Object);
         }
 
         [Test]

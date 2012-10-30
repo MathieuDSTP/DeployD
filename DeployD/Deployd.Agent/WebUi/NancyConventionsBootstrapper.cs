@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
 using Deployd.Agent.Conventions;
@@ -7,6 +8,7 @@ using Nancy;
 using Nancy.Authentication.Basic;
 using Nancy.Authentication.Forms;
 using Nancy.Responses.Negotiation;
+using Nancy.ViewEngines.Razor;
 using Ninject;
 using Raven.Client;
 using TinyIoC;
@@ -73,5 +75,20 @@ namespace Deployd.Agent.WebUi
                         session.Dispose();
                     });
         }
+    }
+
+    public class DeploydRazorConfiguration : IRazorConfiguration
+    {
+        public IEnumerable<string> GetAssemblyNames()
+        {
+            return new string[]{"DeployD.Agent", "DeployD.Core"};
+        }
+
+        public IEnumerable<string> GetDefaultNamespaces()
+        {
+            return new string[] { "DeployD.Agent", "DeployD.Core", "DeployD.Agent.WebUi.Models" };
+        }
+
+        public bool AutoIncludeModelNamespace { get; private set; }
     }
 }

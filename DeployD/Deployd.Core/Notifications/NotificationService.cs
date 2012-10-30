@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Deployd.Core.Hosting;
+using log4net;
 
 namespace Deployd.Core.Notifications
 {
     public class NotificationService : IWindowsService, INotificationService
     {
         private readonly IEnumerable<INotifier> _notifiers;
+        private ILog _log = LogManager.GetLogger(typeof (NotificationService));
 
         public NotificationService(IEnumerable<INotifier> notifiers)
         {
@@ -41,7 +43,13 @@ namespace Deployd.Core.Notifications
             {
                 if (notifier.Handles(eventType))
                 {
-                    notifier.Notify(message);
+                    try
+                    {
+                        notifier.Notify(message);
+                    } catch (Exception ex)
+                    {
+                        _log.Warn("Could not send notification", ex);
+                    }
                 }
             }
         }

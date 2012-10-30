@@ -263,11 +263,14 @@
     <Compile Include="WebUi\Converters\RunningTasksToPackageListViewModelConverter.cs" />
     <Compile Include="WebUi\Models\ActionDetailsViewModel.cs" />
     <Compile Include="WebUi\Models\ActionListViewModel.cs" />
+    <Compile Include="WebUi\Models\ConfigurationViewModel.cs" />
     <Compile Include="WebUi\Models\InstallationsViewModel.cs" />
     <Compile Include="WebUi\Models\LogListViewModel.cs" />
     <Compile Include="WebUi\Models\LogViewModel.cs" />
     <Compile Include="WebUi\Models\PackageListViewModel.cs" />
     <Compile Include="WebUi\CustomFormatterExtensions.cs" />
+    <Compile Include="WebUi\Models\WatchListConfigurationViewModel.cs" />
+    <Compile Include="WebUi\Models\WatchListItemViewModel.cs" />
     <Compile Include="WebUi\Modules\ActionsModule.cs" />
     <Compile Include="WebUi\Modules\ConfigurationModule.cs" />
     <Compile Include="WebUi\Modules\InstallationsModule.cs" />
@@ -313,7 +316,9 @@
     <None Include="watchList.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="web.config" />
+    <None Include="web.config">
+      <SubType>Designer</SubType>
+    </None>
     <Content Include="WebUi\Views\logs\log.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -372,6 +377,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="WebUi\Views\passwordreset.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="WebUi\Views\configuration\watchlist.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

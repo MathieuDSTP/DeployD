@@ -27,7 +27,7 @@ namespace Deployd.Core.Notifications
             _queueTimer.Elapsed += SendNextQueuedMessage;
             _queueTimer.Start();
 
-            _recipients = _settingsManager.Settings.NotificationRecipients.Split(new[] { ';', ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            _recipients = (_settingsManager.Settings.NotificationRecipients??"").Split(new[] { ';', ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
         private void SendNextQueuedMessage(object sender, ElapsedEventArgs elapsedEventArgs)

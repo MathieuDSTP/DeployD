@@ -39,7 +39,8 @@ namespace Deployd.Agent.Conventions
 
             // configuration
             Bind<IAgentWatchListManager>().To<AgentWatchListManager>();
-            Bind<IAgentWatchList>().ToMethod(ctx => ctx.Kernel.Get<IAgentWatchListManager>().Build());
+            Bind<IAgentWatchList>().ToMethod(ctx => ctx.Kernel.Get<IAgentWatchListManager>().Load());
+            Bind<IWatchListStore>().To<DocumentWatchListStore>();
             Bind<IPackageGroupConfiguration>().ToMethod(ctx => PackageGroupConfigurationFactory.Build());
             Bind<IConfigurationDefaults>().To<ConfigurationDefaults>();
 

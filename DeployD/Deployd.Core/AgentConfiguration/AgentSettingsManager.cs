@@ -12,6 +12,7 @@ namespace Deployd.Core.AgentConfiguration
             _agentSettingsStore = agentSettingsStore;
             _log = log;
             _agentSettingsStore.SettingsChanged += (sender, args) => LoadSettings();
+            LoadSettings();
         }
 
         private readonly ILogger _log;
