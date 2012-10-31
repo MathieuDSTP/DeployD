@@ -96,6 +96,7 @@ namespace Deployd.Agent.WebUi.Modules
                     var groups = allTags.OrderBy(t => t).ToList();
                     var packageIds = packages.GroupBy(p => p.Id).OrderBy(p => p.Key).Select(p => p.Key);
 
+                    var watchLIstManager = RequestScope.Get<IAgentWatchListManager>();
                     var watchList = new AgentWatchList();
                     foreach(var group in groups)
                     {
@@ -117,6 +118,8 @@ namespace Deployd.Agent.WebUi.Modules
                             watchList.Packages.Add(new WatchPackage(){Name=packageId, AutoDeploy = auto});
                         }
                     }
+
+                    watchLIstManager.SaveWatchList(watchList);
 
                     return Response.AsRedirect("/configuration/watchList");
                 };
