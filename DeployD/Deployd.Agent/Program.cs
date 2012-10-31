@@ -43,8 +43,12 @@ namespace Deployd.Agent
                 var locator = new NinjectServiceLocator(_kernel);
                 ServiceLocator.SetLocatorProvider(()=>locator);
 
-                var agentSettingsManager = _containerWrapper.GetType<IAgentSettingsManager>();
-                agentSettingsManager.LoadSettings();
+                IAgentSettingsManager agentSettingsManager = null;
+                using (var scope = _containerWrapper.BeginBlock())
+                {
+                    agentSettingsManager = scope.Get<IAgentSettingsManager>();
+                    agentSettingsManager.LoadSettings();
+                }
 
                 SetLogAppenderPaths(agentSettingsManager.Settings, LogManager.GetLogger("Agent.Main"));
 

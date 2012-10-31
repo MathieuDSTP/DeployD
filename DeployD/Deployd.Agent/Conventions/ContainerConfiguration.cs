@@ -36,6 +36,7 @@ namespace Deployd.Agent.Conventions
         {
             // bootstrap
             Bind<IApplicationBootstrap>().To<AdminAccountBootstrap>();
+            Bind<IApplicationBootstrap>().To<VersionMigrationsBootstrap>();
 
             // configuration
             Bind<IAgentWatchListManager>().To<AgentWatchListManager>();
@@ -43,6 +44,7 @@ namespace Deployd.Agent.Conventions
             Bind<IWatchListStore>().To<DocumentWatchListStore>();
             Bind<IPackageGroupConfiguration>().ToMethod(ctx => PackageGroupConfigurationFactory.Build());
             Bind<IConfigurationDefaults>().To<ConfigurationDefaults>();
+            Bind<IApplicationVersionManager>().To<ApplicationVersionManager>();
 
             // services
             Bind<IWindowsService>().To<NotificationService>().InSingletonScope(); // make sure this is first so it is ready to send messages from other services

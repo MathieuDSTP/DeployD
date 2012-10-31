@@ -229,8 +229,12 @@
     <Compile Include="Authentication\DeploydUserIdentity.cs" />
     <Compile Include="Authentication\DeployDUserValidator.cs" />
     <Compile Include="Bootstrap\AdminAccountBootstrap.cs" />
+    <Compile Include="Bootstrap\ApplicationVersionManager.cs" />
     <Compile Include="Bootstrap\Ascii85.cs" />
+    <Compile Include="Bootstrap\DeploydVersion.cs" />
     <Compile Include="Bootstrap\IApplicationBootstrap.cs" />
+    <Compile Include="Bootstrap\IApplicationVersionManager.cs" />
+    <Compile Include="Bootstrap\VersionMigrationsBootstrap.cs" />
     <Compile Include="ContainerWrapper.cs" />
     <Compile Include="Conventions\ContainerConfiguration.cs" />
     <Compile Include="Services\ActionExecutionService.cs" />
@@ -279,6 +283,7 @@
     <Compile Include="WebUi\Modules\NancyModuleWithScope.cs" />
     <Compile Include="WebUi\Modules\PackagesModule.cs" />
     <Compile Include="WebUi\Modules\SecureModule.cs" />
+    <Compile Include="WebUi\Modules\UpgradedModule.cs" />
     <Compile Include="WebUi\NancyConventionsBootstrapper.cs" />
     <Compile Include="WebUi\Modules\HomeModule.cs" />
     <Compile Include="WebUi\Models\PackageVersionsViewModel.cs" />
@@ -380,6 +385,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="WebUi\Views\configuration\watchlist.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="WebUi\Views\upgraded\configuration.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="WebUi\Views\upgraded\watchlist.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

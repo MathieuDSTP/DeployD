@@ -1,0 +1,24 @@
+﻿@{
+	Layout  = "layout.cshtml";
+}
+
+<h2>Configuration</h2>
+
+<form method="post" action="/upgraded/configuration">
+    <fieldset>
+        <legend>General settings</legend>
+        <p><label for="HubAddress">Hub address:</label><input type="text" name="HubAddress" value="@Model.Settings.HubAddress"/></p>
+        <p><label for="BaseInstallationPath">Base installation path:</label><input type="text" name="BaseInstallationPath" value="@Model.Settings.BaseInstallationPath"/></p>
+        <p><label for="NuGetRepository">NuGet repository feed:</label><input type="text" name="NuGetRepository" value="@Model.Settings.NuGetRepository"/></p>
+        <p><label for="DeploymentEnvironment">Deployment environment:</label><input type="text" name="DeploymentEnvironment" value="@Model.Settings.DeploymentEnvironment"/></p>
+        <p><label for="NotificationRecipients">Notification recipients:</label><input type="text" name="NotificationRecipients" value="@Model.Settings.NotificationRecipients"/></p>
+    </fieldset>
+    <fieldset>
+        <legend>Advanced settings</legend>
+        <p><label for="PackageSyncIntervalMs">Package sync interval:</label><input type="text" name="PackageSyncIntervalMs" value="@Model.Settings.PackageSyncIntervalMs"/></p>
+        <p><label for="ConfigurationSyncIntervalMs">Configuration sync interval:</label><input type="text" name="ConfigurationSyncIntervalMs" value="@Model.Settings.ConfigurationSyncIntervalMs"/></p>
+        <p><label for="MaxConcurrentInstallations">Max concurrent installations:</label><input type="text" name="MaxConcurrentInstallations" value="@Model.Settings.MaxConcurrentInstallations"/></p>
+    </fieldset>
+    <input type="submit" value="Next"/>
+
+</form>
