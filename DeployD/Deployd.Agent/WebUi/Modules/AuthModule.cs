@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using Deployd.Agent.Bootstrap;
 using Deployd.Agent.Services.Authentication;
 using Deployd.Core.Hosting;
 using Microsoft.Practices.ServiceLocation;
 using Nancy;
 using Nancy.Authentication.Forms;
 using Nancy.Helpers;
+using Nancy.ModelBinding;
 using Nancy.Responses;
 using Ninject;
 using Raven.Client;
@@ -40,6 +43,23 @@ namespace Deployd.Agent.WebUi.Modules
                     
                 };
 
+            Post["/getauthtoken"] = x =>
+                {
+                    var authenticationService = RequestScope.Get<IAuthenticationService>();
+                    using (var streamReader = new StreamReader(this.Request.Body))
+                    {
+                        var body = streamReader.ReadToEnd();
+                        string[] credentials = body.Split(':');
+                        if (authenticationService.CredentialsAuthenticate(credentials[0],credentials[1], true))
+                        {
+                            return authenticationService.GenerateAuthenticationToken(credentials[0]);
+                        }
+                    }
+
+
+                    return "hello";
+                };
+
             Get["/logout"] = x => FormsAuthentication.LogOutAndRedirectResponse(Context, "/");
 
             Get["/resetpassword/{token}"] = x =>
@@ -68,6 +88,7 @@ namespace Deployd.Agent.WebUi.Modules
                     return Response.AsRedirect("/passwordreset");
                 };
             Get["/passwordreset"] = x => View["passwordreset.cshtml"];
+
         }
     }
 

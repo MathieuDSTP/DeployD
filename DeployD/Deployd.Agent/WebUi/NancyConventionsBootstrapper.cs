@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Principal;
-using Deployd.Agent.Conventions;
 using Microsoft.Practices.ServiceLocation;
 using Nancy;
 using Nancy.Authentication.Basic;
 using Nancy.Authentication.Forms;
-using Nancy.Responses.Negotiation;
 using Nancy.ViewEngines.Razor;
 using Ninject;
-using Raven.Client;
-using TinyIoC;
 using log4net;
 
 namespace Deployd.Agent.WebUi

@@ -18,9 +18,9 @@ namespace Deployd.Agent.Services.Authentication
             _credentialStore = credentialStore;
         }
 
-        public bool CredentialsAuthenticate(string username, string password)
+        public bool CredentialsAuthenticate(string username, string password, bool preHashed=false)
         {
-            return _credentialStore.ValidateCredentials(username, password);
+            return _credentialStore.ValidateCredentials(username, password, preHashed);
         }
 
         public Guid GenerateAuthenticationToken(string username)

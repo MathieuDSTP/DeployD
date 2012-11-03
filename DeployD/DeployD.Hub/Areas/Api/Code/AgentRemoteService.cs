@@ -14,10 +14,12 @@ namespace DeployD.Hub.Areas.Api.Code
     public class AgentRemoteService : IAgentRemoteService
     {
         private readonly ILogger _logger;
+        private readonly IAgentCredentialStore _agentCredentialStore;
 
-        public AgentRemoteService(ILogger logger)
+        public AgentRemoteService(ILogger logger, IAgentCredentialStore agentCredentialStore)
         {
             _logger = logger;
+            _agentCredentialStore = agentCredentialStore;
         }
 
         public List<PackageViewModel> ListPackages(string hostname)
@@ -40,11 +42,13 @@ namespace DeployD.Hub.Areas.Api.Code
             request.Accept = "application/json";
             string contentType = "";
             using (var response = request.GetResponse() as HttpWebResponse)
-            using (var stream = response.GetResponseStream())
-            using (var streamReader = new StreamReader(stream, System.Text.Encoding.UTF8))
             {
-                responseContent = streamReader.ReadToEnd();
-                contentType = response.Headers["Content-Type"];
+                using (var stream = response.GetResponseStream())
+                using (var streamReader = new StreamReader(stream, System.Text.Encoding.UTF8))
+                {
+                    responseContent = streamReader.ReadToEnd();
+                    contentType = response.Headers["Content-Type"];
+                }
             }
             var decoded = System.Web.Helpers.Json.Decode<T>(responseContent);
             return decoded;
@@ -119,6 +123,11 @@ namespace DeployD.Hub.Areas.Api.Code
             return Get<LogFileDto>(url);
         }
     }
+
+    public interface IAgentCredentialStore
+    {
+    }
+
     [DataContract]
     public class PackageLogFolderListDto
     {

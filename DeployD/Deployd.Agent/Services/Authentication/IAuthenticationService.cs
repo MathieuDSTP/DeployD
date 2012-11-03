@@ -5,7 +5,7 @@ namespace Deployd.Agent.Services.Authentication
 {
     public interface IAuthenticationService
     {
-        bool CredentialsAuthenticate(string username, string password);
+        bool CredentialsAuthenticate(string username, string password, bool preHashed=false);
         Guid GenerateAuthenticationToken(string username);
         DeploydUserIdentity GetUserByAuthenticationToken(Guid guid);
     }
