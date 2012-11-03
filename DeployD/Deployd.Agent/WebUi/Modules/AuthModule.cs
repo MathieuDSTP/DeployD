@@ -50,7 +50,7 @@ namespace Deployd.Agent.WebUi.Modules
                     {
                         var body = streamReader.ReadToEnd();
                         string[] credentials = body.Split(':');
-                        if (authenticationService.CredentialsAuthenticate(credentials[0],credentials[1], true))
+                        if (authenticationService.CredentialsAuthenticate(credentials[0],credentials[1]))
                         {
                             return authenticationService.GenerateAuthenticationToken(credentials[0]);
                         }

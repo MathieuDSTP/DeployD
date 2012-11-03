@@ -72,7 +72,7 @@ namespace Deployd.Agent.Services.Authentication
             return resetToken.ToString();
         }
 
-        public bool ValidateCredentials(string username, string password, bool preHashed)
+        public bool ValidateCredentials(string username, string password)
         {
             return CredentialStore.Any(uc => uc.Id.Equals(username, StringComparison.OrdinalIgnoreCase)
                                               && BCrypt.Net.BCrypt.Verify(password, uc.HashedPassword));

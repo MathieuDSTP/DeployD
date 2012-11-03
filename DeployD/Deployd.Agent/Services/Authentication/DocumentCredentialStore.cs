@@ -80,14 +80,11 @@ namespace Deployd.Agent.Services.Authentication
             return resetToken.ToString();
         }
 
-        public bool ValidateCredentials(string username, string password, bool preHashed)
+        public bool ValidateCredentials(string username, string password)
         {
             var user = _session.Load<UserCredentials>(username);
             if (user == null)
                 return false;
-
-            if (preHashed)
-                return user.HashedPassword.Equals(password);
 
             return BCrypt.Net.BCrypt.Verify(password, user.HashedPassword);
         }

@@ -1,3 +1,4 @@
+using System;
 using Deployd.Agent.Services.Authentication;
 using Microsoft.Practices.ServiceLocation;
 using Nancy.Authentication.Basic;
@@ -18,6 +19,16 @@ namespace Deployd.Agent.Authentication
             {
                 return new DeploydUserIdentity(){UserName=username};
             }
+            return null;
+        }
+
+        public IUserIdentity ValidateAuthenticationToken(Guid token)
+        {
+            var authenticationService = ServiceLocator.Current.GetInstance<IAuthenticationService>();
+            var user = authenticationService.GetUserByAuthenticationToken(token);
+            if (user != null)
+                return new DeploydUserIdentity(){UserName=user.UserName};
+
             return null;
         }
     }

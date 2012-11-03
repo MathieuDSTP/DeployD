@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Deployd.Agent.Authentication;
+using Deployd.Agent.Services.Authentication;
 using Microsoft.Practices.ServiceLocation;
 using Nancy;
 using Nancy.Authentication.Basic;
@@ -40,11 +42,35 @@ namespace Deployd.Agent.WebUi
 
             using (var scope = kernel.BeginBlock())
             {
+                var userValidator = scope.Get<IUserValidator>();
+                var authenticationService = scope.Get<IAuthenticationService>();
 
                 var credentials = ExtractCredentialsFromRequest(context);
                 if (credentials != null)
-                    context.CurrentUser = scope.Get<IUserValidator>().Validate(credentials[0],credentials[1]);
+                {
+                    context.CurrentUser = userValidator.Validate(credentials[0],credentials[1]);
+                }
+
+
+                Guid authToken;
+                if (ExtractAuthenticationTokenFromRequest(context, out authToken))
+                {
+                    context.CurrentUser = authenticationService.GetUserByAuthenticationToken(authToken);
+                }
             }
+        }
+
+        private bool ExtractAuthenticationTokenFromRequest(NancyContext context, out Guid authToken)
+        {
+            authToken = Guid.Empty;
+            var authHeader = context.Request.Headers["Authorization"].SingleOrDefault();
+
+            if (authHeader != null && Guid.TryParse(authHeader, out authToken))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private string[] ExtractCredentialsFromRequest(NancyContext context)
