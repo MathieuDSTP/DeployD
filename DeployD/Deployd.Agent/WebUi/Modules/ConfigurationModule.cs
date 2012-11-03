@@ -12,6 +12,7 @@ using Deployd.Core.Hosting;
 using Nancy;
 using Nancy.ModelBinding;
 using Nancy.Responses;
+using Nancy.Responses.Negotiation;
 using Ninject;
 using NuGet;
 
@@ -33,7 +34,9 @@ namespace Deployd.Agent.WebUi.Modules
                             Settings = agentSettings.LoadSettings()
                         };
 
-                    return Negotiate.WithView("configuration/index.cshtml").WithModel(configurationViewModel);
+                    return Negotiate
+                        .WithView("configuration/index.cshtml")
+                        .WithModel(configurationViewModel);
                 };
             Post["/save"] = x =>
                 {

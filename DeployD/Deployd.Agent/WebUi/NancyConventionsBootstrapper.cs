@@ -39,11 +39,17 @@ namespace Deployd.Agent.WebUi
 
         protected override void RequestStartup(Ninject.IKernel container, Nancy.Bootstrapper.IPipelines pipelines, NancyContext context)
         {
-            base.RequestStartup(container, pipelines, context);
+            var kernel = ServiceLocator.Current.GetInstance<IKernel>();
+            ConfigureRequestContainer(kernel, context);
+            base.RequestStartup(kernel, pipelines, context);
 
-            var credentials = ExtractCredentialsFromRequest(context);
-            if(credentials !=null)
-                context.CurrentUser = container.Get<IUserValidator>().Validate(credentials[0], credentials[1]);
+            using (var scope = kernel.BeginBlock())
+            {
+
+                var credentials = ExtractCredentialsFromRequest(context);
+                if (credentials != null)
+                    context.CurrentUser = scope.Get<IUserValidator>().Validate(credentials[0],credentials[1]);
+            }
         }
 
         private string[] ExtractCredentialsFromRequest(NancyContext context)
@@ -57,23 +63,6 @@ namespace Deployd.Agent.WebUi
                 return null;
 
             return credentials;
-        }
-
-        protected override void ConfigureRequestContainer(IKernel container, NancyContext context)
-        {
-            base.ConfigureRequestContainer(container, context);
-            container.Bind<IDocumentSession>()
-                .ToMethod(ctx =>
-                    {
-                        log.Debug("(Bootstrapper) opening session");
-                        return container.Get<IDocumentStore>().OpenSession();
-                    })
-                .OnDeactivation(session =>
-                    {
-                        log.Debug("(Bootstrapper) saving changes and closing session");
-                        session.SaveChanges();
-                        session.Dispose();
-                    });
         }
     }
 
